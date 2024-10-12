@@ -1,0 +1,15 @@
+.secenek {
+    background-color: palegoldenrod; color: black; height: 30px; margin-top: 10px;
+}
+
+.secilen {
+    border: 3px solid blue;
+}
+
+.yanlis-cevap {
+    border: 3px solid red;
+}
+
+.dogru-cevap {
+    border: 3px solid green;
+}
