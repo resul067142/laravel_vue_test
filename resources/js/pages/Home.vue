@@ -4,15 +4,26 @@
             <div class="card">
                 <div class="card-body">
                     <div v-if="!yarismaBasladi" class="row">
-                        <div class="col-12 text-center">
-                            <form @submit.prevent="start">
-                                <div class="form-group">
-                                    <label class="m-2" for="">Fotoğraf Ekle</label>
-                                    <input class="m-2" @change="onFileChange" type="file" required>
+                        <div class="col-12 text-center"><form @submit.prevent="start">
+                            <div class="form-group">
+                                <label class="m-2" for="photoUpload">FOTOGRAF EKLE</label>
+                                <div class="custom-file">
+                                    <input class="custom-file-input" id="photoUpload" @change="onFileChange" type="file" required>
+                                    <label class="custom-file-label" for="photoUpload">Dosya Seçin</label>
+
+                                    <small style="margin-left: 20px" class="form-text text-muted">JPEG, PNG formatında dosya
+                                    yükleyebilirsiniz.</small>
                                 </div>
+
+                            </div>
+
+                            <div class="form-group">
                                 <input type="text" v-model="name" class="form-control" placeholder="Ad" required>
-                                <button type="submit" class="btn btn-primary mt-1">Yarışmaya Başla</button>
-                            </form>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary mt-1">Yarışmaya Başla</button>
+                        </form>
+
                         </div>
                     </div>
                     <div v-if="yarismaBasladi" class="row">
@@ -182,3 +193,50 @@ export default {
     }
 };
 </script>
+<style>.custom-file {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem; /* Alt boşluk ekle */
+}
+
+.custom-file-input {
+    position: absolute;
+    z-index: 1;
+    opacity: 0; /* Dosya girişini görünmez yap */
+    height: 100%;
+    width: 100%;
+}
+
+.custom-file-label {
+    display: block;
+    padding: 0.5rem 1rem;
+    border: 2px dashed #007bff; /* Kırmızı kenar rengi */
+    border-radius: 0.25rem;
+    background-color: #f8f9fa;
+    transition: border-color 0.2s ease-in-out, background-color 0.2s ease-in-out;
+    font-weight: 500;
+    color: #007bff; /* Metin rengi */
+    text-align: center; /* Metni ortala */
+}
+
+.custom-file-input:focus + .custom-file-label {
+    border-color: #0056b3; /* Fokus rengi */
+}
+
+.custom-file-input:valid + .custom-file-label {
+    color: #495057; /* Geçerli dosya seçildiğinde metin rengi */
+}
+
+.custom-file-input:invalid + .custom-file-label {
+    color: #dc3545; /* Geçersiz dosya seçildiğinde metin rengi */
+}
+
+/* Küçük ekranlar için responsive stil */
+@media (max-width: 600px) {
+    .custom-file-label {
+        padding: 0.75rem; /* Küçük ekranlarda daha fazla iç boşluk */
+    }
+}
+
+</style>
