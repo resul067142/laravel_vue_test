@@ -1,3 +1,19 @@
+
+
+
+
+4- git push
+3- git commit -m "yarışmanın başlaması düzenlendi."
+2- git add .
+1- git status
+
+sunucu terminalde
+
+root@ns1:/home/laravel_vue_test# bu dizine git  cd ile git
+git pull   githubdaki verileri sunucudaki projeye ceker günceller canlıya alır.
+npm run build   vue de değişiklik yaptıgında yaz.
+
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">

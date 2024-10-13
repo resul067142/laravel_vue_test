@@ -8,7 +8,7 @@
                         <form @click.prevent="login">
                             <input class="form-control mb-2" placeholder="Email" type="email" v-model="email" required>
                             <input class="form-control mb-2" placeholder="Parola" type="password" v-model="password" required>
-                            <button class="btn btn-primary">Giriş</button>
+                            <button class="btn btn-danger">Giriş Yap</button>
                         </form>
                     </div>
                 </div>
