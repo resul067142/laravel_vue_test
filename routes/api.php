@@ -20,7 +20,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 Route::post('/login', [\App\Http\Controllers\Api\AuthController::class, 'login']);
 
-Route::get('/sorular', [SorularController::class, 'index'])->middleware('auth:sanctum');
+Route::get('/sorular', [SorularController::class, 'index']);
 Route::get('/sorular/{id}', [SorularController::class, 'show'])->middleware('auth:sanctum');;
 Route::post('/sorular', [SorularController::class, 'store'])->middleware('auth:sanctum');;
 Route::put('/sorular/{id}', [SorularController::class, 'update'])->middleware('auth:sanctum');;
