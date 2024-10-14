@@ -3,8 +3,8 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <h1 >Sorular
-                        <router-link class="btn btn-sm btn-primary" to="/sorular/ekle">Ekle</router-link>
+                    <h1>SINAV SORULARI
+                        <router-link class="btn btn-sm btn-primary" to="/sorular/ekle"> Soru Ekle</router-link>
                     </h1>
                     <hr>
 

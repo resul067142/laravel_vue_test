@@ -14,7 +14,6 @@
                                     <small style="margin-left: 20px" class="form-text text-muted">JPEG, PNG formatında dosya
                                     yükleyebilirsiniz.</small>
                                 </div>
-
                             </div>
 
                             <div class="form-group">
