@@ -8,9 +8,7 @@
                 <router-link v-if="!isAuth" to="/admin" class="nav-link" @click="handleAdminLoginClick">ADMİN GİRİŞ</router-link>
                 <button v-if="isAuth" type="button" @click="logout" class="logout-button">ADMİN ÇIKIŞ</button>
             </div>
-
         </div>
-
         <!-- Sıralama menüsü görünürlüğü -->
         <div v-if="isRankingVisible" class="score-menu">
             <router-link to="/scores/0-25" class="score-link"  @click.prevent="fetchScores('0-25')">0-25</router-link>
