@@ -15,11 +15,9 @@
                                     yükleyebilirsiniz.</small>
                                 </div>
                             </div>
-
                             <div class="form-group">
                                 <input type="text" v-model="name" class="form-control" placeholder="Ad" required>
                             </div>
-
                             <button type="submit" class="btn btn-primary mt-1">Yarışmaya Başla</button>
                         </form>
 
