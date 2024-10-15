@@ -6,7 +6,7 @@
                     <div v-if="!yarismaBasladi" class="row">
                         <div class="col-12 text-center"><form @submit.prevent="start">
                             <div class="form-group">
-                                <label class="m-2" for="photoUpload">FOTOGRAF EKLE</label>
+                                <label class="m-2" for="photoUpload"><b>FOTOGRAF EKLE</b></label>
                                 <div class="custom-file">
                                     <input class="custom-file-input" id="photoUpload" @change="onFileChange" type="file" required>
                                     <label class="custom-file-label" for="photoUpload">Dosya Seçin</label>
@@ -88,9 +88,9 @@
                     <table class="table">
                         <thead>
                         <tr>
-                            <th>Fotoğraf</th>
-                            <th>Ad</th>
-                            <th>Puan</th>
+                            <th>FOTOĞRAF</th>
+                            <th>İSİM</th>
+                            <th>PUAN</th>
                         </tr>
                         </thead>
                         <tbody>

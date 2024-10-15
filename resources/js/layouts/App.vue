@@ -1,10 +1,10 @@
 <template>
     <div id="app">
         <div class="nav-container">
-            <div class="nav-links">
+            <div  class="nav-links">
                 <router-link to="/" class="nav-link" @click="handleNavClick">ANA SAYFA</router-link>
                 <router-link v-if="isAuth" to="/sorular" class="nav-link" @click="handleNavClick">SORULAR</router-link>
-                <button v-if="!isAuth" type="button" @click="openRanking" class="ranking-button"> PUAN SIRALAMA</button>
+                <button v-if="!isAuth" type="button" @click="openRanking" class="nav-link"> PUAN SIRALAMA</button>
                 <router-link v-if="!isAuth" to="/admin" class="nav-link" @click="handleAdminLoginClick">ADMİN GİRİŞ</router-link>
                 <button v-if="isAuth" type="button" @click="logout" class="logout-button">ADMİN ÇIKIŞ</button>
             </div>
@@ -113,22 +113,24 @@ export default {
 }
 
 .nav-link {
-    color: #2980b9;
+    color: white;
     text-decoration: none;
     font-weight: bold;
     padding: 10px 15px; /* Buton görünümünü artırmak için padding */
     border-radius: 5px; /* Yuvarlatılmış köşeler */
     transition: background-color 0.3s ease;
+    background-color: #0056b3;
 }
 
 .nav-link:hover {
-    background-color: #dfe6e9; /* Açık gri hover efekti */
+    background-color: skyblue; /* Açık gri hover efekti */
+    transition: background-color .2s ease;
 }
 
 /* Sıralama butonu stili */
 .ranking-button {
-    background-color: #3498db; /* Mavi arka plan */
-    color: white;
+    //background-color: #3498db; /* Mavi arka plan */
+    color: #0056b3;
     border: none;
     padding: 10px 15px;
     border-radius: 5px;
