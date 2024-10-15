@@ -24,8 +24,8 @@
                         </div>
                     </div>
                     <div v-if="yarismaBasladi" class="row">
-                        <div class="col-12 m-2 text-center">
-                            Hoşgeldin <strong>{{name}}</strong>
+                        <div class="col-12 m-1 text-center">
+                            <b>Hoşgeldin <strong>{{name}}</strong> Başarılar Dileriz.</b>
                         </div>
                     </div>
                     <div v-if="yarismaBasladi && sorular && sorular.length && secilenSoru" class="row">
