@@ -1,26 +1,32 @@
 <template>
     <div class="row">
+        <div class="col-12 text-center mb-3">
+            <div class="weather-container d-flex justify-content-center align-items-center">
+                <div id="date" class="date me-3"></div>
+                <div id="clock" class="clock me-3"></div>
+                <div id="weather" class="weather"></div>
+            </div>
+        </div>
         <div class="col-12 col-md-6">
             <div class="card">
                 <div class="card-body">
                     <div v-if="!yarismaBasladi" class="row">
-                        <div class="col-12 text-center"><form @submit.prevent="start">
-                            <div class="form-group">
-                                <label class="m-2" for="photoUpload"><b>FOTOGRAF EKLE</b></label>
-                                <div class="custom-file">
-                                    <input class="custom-file-input" id="photoUpload" @change="onFileChange" type="file" required>
-                                    <label class="custom-file-label" for="photoUpload">Dosya Seçin</label>
+                        <div class="col-12 text-center">
+                            <form @submit.prevent="start">
+                                <div class="form-group">
+                                    <label class="m-2" for="photoUpload"><b>FOTOGRAF EKLE</b></label>
+                                    <div class="custom-file">
+                                        <input class="custom-file-input" id="photoUpload" @change="onFileChange" type="file" required>
+                                        <label class="custom-file-label" for="photoUpload">Dosya Seçin</label>
 
-                                    <small style="margin-left: 20px" class="form-text text-muted">JPEG, PNG formatında dosya
-                                    yükleyebilirsiniz.</small>
+                                        <small style="margin-left: 20px" class="form-text text-muted">JPEG, PNG formatında dosya yükleyebilirsiniz.</small>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="form-group">
-                                <input type="text" v-model="name" class="form-control" placeholder="Ad" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary mt-1">Yarışmaya Başla</button>
-                        </form>
-
+                                <div class="form-group">
+                                    <input type="text" v-model="name" class="form-control" placeholder="Ad" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary mt-1">Yarışmaya Başla</button>
+                            </form>
                         </div>
                     </div>
                     <div v-if="yarismaBasladi" class="row">
@@ -37,20 +43,16 @@
                                 {{secilenSoru.soru}}
                             </div>
 
-                            <div @click="sec(1)"
-                                 :class="'secenek' +  (secilenSoru.secilen_cevap && secilenSoru.secilen_cevap === 1 ? ' secilen' : '')">
+                            <div @click="sec(1)" :class="'secenek' +  (secilenSoru.secilen_cevap && secilenSoru.secilen_cevap === 1 ? ' secilen' : '')">
                                 1 - {{secilenSoru.secenek_1}}
                             </div>
-                            <div @click="sec(2)"
-                                 :class="'secenek' +  (secilenSoru.secilen_cevap && secilenSoru.secilen_cevap === 2 ? ' secilen' : '')">
+                            <div @click="sec(2)" :class="'secenek' +  (secilenSoru.secilen_cevap && secilenSoru.secilen_cevap === 2 ? ' secilen' : '')">
                                 2 - {{secilenSoru.secenek_2}}
                             </div>
-                            <div @click="sec(3)"
-                                 :class="'secenek' +  (secilenSoru.secilen_cevap && secilenSoru.secilen_cevap === 3 ? ' secilen' : '')">
+                            <div @click="sec(3)" :class="'secenek' +  (secilenSoru.secilen_cevap && secilenSoru.secilen_cevap === 3 ? ' secilen' : '')">
                                 3 - {{secilenSoru.secenek_3}}
                             </div>
-                            <div @click="sec(4)"
-                                 :class="'secenek' +  (secilenSoru.secilen_cevap && secilenSoru.secilen_cevap === 4 ? ' secilen' : '')">
+                            <div @click="sec(4)" :class="'secenek' +  (secilenSoru.secilen_cevap && secilenSoru.secilen_cevap === 4 ? ' secilen' : '')">
                                 4 - {{secilenSoru.secenek_4}}
                             </div>
                             <div v-if="skorKaydedildi">
@@ -150,6 +152,7 @@ export default {
                 this.sorular = res.data;
                 this.secilenSoru = this.sorular[0];
                 this.yarismaBasladi = true;
+                window.addEventListener('beforeunload', this.handleBeforeUnload);
             });
         },
         oncekiSoru() {
@@ -180,6 +183,42 @@ export default {
                 axios.get('/api/scores').then(res => {
                     this.scores = res.data;
                 });
+                window.removeEventListener('beforeunload', this.handleBeforeUnload);
+            });
+        },
+        updateClock() {
+            const clockElement = document.getElementById("clock");
+            setInterval(() => {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('tr-TR', { hour12: false });
+                clockElement.innerText = `Saat: ${timeString}`;
+            }, 1000);
+        },
+        updateWeather() {
+            const weatherElement = document.getElementById("weather");
+            // Example API call for weather with city information (dummy data)
+            const city = "Ankara";
+            axios.get('https://api.open-meteo.com/v1/forecast?latitude=39.9334&longitude=32.8597&hourly=temperature_2m').then(res => {
+                const temperature = res.data.hourly.temperature_2m[0];
+                weatherElement.innerHTML = `<span class='city'>${city}</span> - <span class='temperature'>${temperature}°C</span>`;
+            }).catch(() => {
+                weatherElement.innerText = "Hava Durumu: Bilgi alınamadı";
+            });
+        },
+        updateDate() {
+            const dateElement = document.getElementById("date");
+            const now = new Date();
+            const dateString = now.toLocaleDateString('tr-TR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            dateElement.innerHTML = `<span class='date-text'>${dateString}</span>`;
+        },
+        handleBeforeUnload(event) {
+            event.preventDefault();
+            event.returnValue = '';
+        },
+        confirmNavigation() {
+            window.addEventListener('beforeunload', (event) => {
+                event.preventDefault();
+                event.returnValue = '';
             });
         }
     },
@@ -187,20 +226,29 @@ export default {
         axios.get('/api/scores').then(res => {
             this.scores = res.data;
         });
+        this.updateClock();
+        this.updateWeather();
+        this.updateDate();
+        window.addEventListener('beforeunload', this.handleBeforeUnload);
+    },
+    beforeDestroy() {
+        window.removeEventListener('beforeunload', this.handleBeforeUnload);
     }
 };
 </script>
-<style>.custom-file {
+
+<style>
+.custom-file {
     position: relative;
     display: flex;
     align-items: center;
-    margin-bottom: 1rem; /* Alt boşluk ekle */
+    margin-bottom: 1rem;
 }
 
 .custom-file-input {
     position: absolute;
     z-index: 1;
-    opacity: 0; /* Dosya girişini görünmez yap */
+    opacity: 0;
     height: 100%;
     width: 100%;
 }
@@ -208,32 +256,55 @@ export default {
 .custom-file-label {
     display: block;
     padding: 0.5rem 1rem;
-    border: 2px dashed #007bff; /* Kırmızı kenar rengi */
+    border: 2px dashed #007bff;
     border-radius: 0.25rem;
     background-color: #f8f9fa;
     transition: border-color 0.2s ease-in-out, background-color 0.2s ease-in-out;
     font-weight: 500;
-    color: #007bff; /* Metin rengi */
-    text-align: center; /* Metni ortala */
+    color: #007bff;
+    text-align: center;
 }
 
 .custom-file-input:focus + .custom-file-label {
-    border-color: #0056b3; /* Fokus rengi */
+    border-color: #0056b3;
 }
 
 .custom-file-input:valid + .custom-file-label {
-    color: #495057; /* Geçerli dosya seçildiğinde metin rengi */
+    color: #495057;
 }
 
 .custom-file-input:invalid + .custom-file-label {
-    color: #dc3545; /* Geçersiz dosya seçildiğinde metin rengi */
+    color: #dc3545;
 }
 
-/* Küçük ekranlar için responsive stil */
-@media (max-width: 600px) {
-    .custom-file-label {
-        padding: 0.75rem; /* Küçük ekranlarda daha fazla iç boşluk */
+.weather-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    color: #007bff;
+    font-weight: bold;
+    font-size: 1rem; /* Genel font boyutu */
+}
+
+.date, .clock, .weather {
+    background-color: #f0f8ff;
+    padding: 5px;
+    border-radius: 5px;
+    color: #007bff;
+    font-size: 0.8rem; /* Tarih, saat ve derece bilgileri */
+    text-align: center;
+}
+
+@media (max-width: 576px) {
+    .weather-container {
+        flex-direction: row;
+        font-size: 0.6rem; /* Mobil cihazlarda daha küçük boyut */
+    }
+    .date, .clock, .weather {
+        margin-bottom: 0;
+        flex: 1;
+        text-align: center;
     }
 }
-
 </style>
