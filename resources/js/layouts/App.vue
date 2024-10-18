@@ -1,17 +1,17 @@
 <template>
     <div id="app">
         <div class="nav-container">
-            <div  class="nav-links">
+            <div class="nav-links">
                 <router-link to="/" class="nav-link" @click="handleNavClick">ANA SAYFA</router-link>
                 <router-link v-if="isAuth" to="/sorular" class="nav-link" @click="handleNavClick">SORULAR</router-link>
-                <button v-if="!isAuth" type="button" @click="openRanking" class="nav-link"> PUAN SIRALAMA</button>
+                <button v-if="!isAuth" type="button" @click="openRanking" class="ranking-button">PUAN SIRALAMA</button>
                 <router-link v-if="!isAuth" to="/admin" class="nav-link" @click="handleAdminLoginClick">ADMİN GİRİŞ</router-link>
                 <button v-if="isAuth" type="button" @click="logout" class="logout-button">ADMİN ÇIKIŞ</button>
             </div>
         </div>
         <!-- Sıralama menüsü görünürlüğü -->
         <div v-if="isRankingVisible" class="score-menu">
-            <router-link to="/scores/0-25" class="score-link"  @click.prevent="fetchScores('0-25')">0-25</router-link>
+            <router-link to="/scores/0-25" class="score-link" @click.prevent="fetchScores('0-25')">0-25</router-link>
             <router-link to="/scores/26-50" class="score-link" @click.prevent="fetchScores('26-50')">26-50</router-link>
             <router-link to="/scores/51-75" class="score-link" @click.prevent="fetchScores('51-75')">51-75</router-link>
             <router-link to="/scores/76-100" class="score-link" @click.prevent="fetchScores('76-100')">76-100</router-link>
@@ -37,6 +37,30 @@
                     Başarılar dileriz!"</p>
                 <button @click="closeModal" class="modal-button">Tamam</button>
             </div>
+        </div>
+
+        <!-- Alt kısımda ikonlu menü -->
+        <div class="bottom-menu">
+            <router-link to="/profile" class="bottom-menu-item">
+                <i class="fas fa-user"></i>
+                <span>PROFİL</span>
+            </router-link>
+            <router-link to="/badges" class="bottom-menu-item">
+                <i class="fas fa-trophy"></i>
+                <span>ROZETLER</span>
+            </router-link>
+            <router-link to="/exam-create" class="bottom-menu-item exam-create">
+                <i class="fas fa-edit"></i>
+                <span>SINAV OLUŞTUR</span>
+            </router-link>
+            <router-link to="/categories" class="bottom-menu-item">
+                <i class="fas fa-list"></i>
+                <span>KATEGORİ</span>
+            </router-link>
+            <router-link to="/statistics" class="bottom-menu-item">
+                <i class="fas fa-chart-bar"></i>
+                <span>İSTATİSTİK</span>
+            </router-link>
         </div>
     </div>
 </template>
@@ -95,7 +119,6 @@ export default {
 }
 </script>
 
-
 <style scoped>
 /* Nav Container Stilleri */
 .nav-container {
@@ -103,97 +126,85 @@ export default {
     justify-content: center;
     align-items: center;
     padding: 10px;
-    background-color: #f8f9fa; /* Arka plan rengi */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Gölge efekti */
+    background-color: #f8f9fa;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .nav-links {
     display: flex;
-    gap: 5px; /* Bağlantılar arasındaki mesafeyi azaltmak için */
+    gap: 15px;
+    flex-wrap: wrap;
 }
 
 .nav-link {
     color: white;
     text-decoration: none;
     font-weight: bold;
-    padding: 10px 15px; /* Buton görünümünü artırmak için padding */
-    border-radius: 5px; /* Yuvarlatılmış köşeler */
+    padding: 10px 15px;
+    border-radius: 5px;
     transition: background-color 0.3s ease;
-    background-color: #0056b3;
+    background-color: #007bff;
 }
 
 .nav-link:hover {
-    background-color: skyblue; /* Açık gri hover efekti */
-    transition: background-color .2s ease;
+    background-color: #0056b3;
 }
 
 /* Sıralama butonu stili */
 .ranking-button {
-    //background-color: #3498db; /* Mavi arka plan */
-    color: #0056b3;
+    color: #007bff;
     border: none;
     padding: 10px 15px;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    width: 150px; /* Sabit genişlik ayarlama */
+    font-size: 1em;
+    background-color: #f8f9fa;
 }
 
 .ranking-button:hover {
-    background-color: #2980b9; /* Koyu mavi hover efekti */
+    background-color: #e2e6ea;
 }
 
 /* Logout butonu stili */
 .logout-button {
-    background-color: #3498db; /* Mavi arka plan */
+    background-color: #dc3545;
     color: white;
     border: none;
-    padding: 10px 15px;
+    padding: 10px 20px;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    width: 150px; /* Sabit genişlik ayarlama */
+    font-size: 1em;
 }
 
 .logout-button:hover {
-    background-color: #2980b9; /* Koyu mavi hover efekti */
+    background-color: #c82333;
 }
 
 /* Puan Menüsü stilleri */
 .score-menu {
-    display: flex; /* Yatay hizalama */
-    justify-content: space-between; /* İlk butonu sola, son butonu sağa yaslama */
-    flex-wrap: nowrap; /* Sadece tek satırda kalmasını sağla */
-    margin: 20px 10px; /* Dışarıdan alan */
-    padding: 10px; /* İç boşluk */
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 20px;
+    gap: 10px;
 }
 
 .score-link {
     padding: 10px;
-    background-color: #3498db; /* Mavi arka plan */
+    background-color: #28a745;
     color: white;
     text-decoration: none;
     text-align: center;
-    border-radius: 5px; /* Yuvarlatılmış köşeler */
-    transition: background-color 0.3s ease, transform 0.2s ease; /* Geçiş efektleri */
-    width: 150px; /* Sabit genişlik ayarlama */
-}
-
-/* Mobil görünüm ayarları */
-@media (max-width: 768px) {
-    .score-menu {
-        justify-content: space-between; /* Elemanlar arasındaki boşluk */
-    }
-    .score-link {
-        width: 150px; /* Sabit genişlik ayarlama */
-        margin-right:2px;
-    }
+    border-radius: 5px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    min-width: 100px;
 }
 
 .score-link:hover {
-    background-color: green; /* Koyu mavi hover efekti */
-    transform: scale(1.05); /* Hoverda biraz büyütme */
-
+    background-color: #218838;
+    transform: scale(1.05);
 }
 
 .score-item {
@@ -202,8 +213,8 @@ export default {
 }
 
 .score-photo {
-    width: 100px;
-    height: 100px;
+    width: 80px;
+    height: 80px;
     object-fit: cover;
     border-radius: 50%;
     margin-bottom: 10px;
@@ -224,25 +235,110 @@ export default {
 
 .modal-content {
     background: white;
-    padding: 20px;
+    padding: 30px;
     border-radius: 8px;
     text-align: center;
+    max-width: 90%;
 }
 
 .modal-button {
-    background-color: #3498db;
+    background-color: #007bff;
     color: white;
     border: none;
-    padding: 10px 15px;
+    padding: 10px 20px;
     border-radius: 5px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 1em;
 }
 
 .modal-button:hover {
-    background-color: #2980b9; /* Koyu mavi hover efekti */
+    background-color: #0056b3;
+}
+
+/* Alt menü stil */
+.bottom-menu {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #343a40;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.bottom-menu-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 0.9em;
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+    transition: transform 0.3s ease;
+    text-align: center;
+}
+
+.bottom-menu-item i {
+    font-size: 20px;
+    margin-bottom: 5px;
+    transition: transform 0.3s ease;
+}
+
+.bottom-menu-item:hover {
+    transform: scale(1.1);
+}
+
+/* SINAV OLUŞTUR butonu animasyonu */
+.exam-create {
+    animation: pulse-red 3s infinite, grow-shrink 3s infinite;
+}
+
+@keyframes pulse-red {
+    0%, 100% {
+        background-color: #e74c3c;
+    }
+    50% {
+        background-color: #ff6f61;
+    }
+}
+
+@keyframes grow-shrink {
+    0%, 100% {
+        font-size: 0.9em;
+    }
+    50% {
+        font-size: 1.1em;
+    }
+}
+
+@media (max-width: 768px) {
+    .nav-container {
+        padding: 10px;
+    }
+    .nav-link {
+        padding: 8px 15px;
+        font-size: 0.9em;
+    }
+    .ranking-button {
+        padding: 8px 15px;
+        font-size: 0.9em;
+    }
+    .score-link {
+        width: 100%;
+    }
+    .bottom-menu {
+        flex-direction: row;
+        gap: 5px;
+        padding: 15px;
+        background-color: rgba(52, 58, 64, 0.9);
+    }
+    .bottom-menu-item {
+        font-size: 0.8em;
+    }
 }
 </style>
-
-
-
-
