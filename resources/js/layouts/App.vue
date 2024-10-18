@@ -140,14 +140,14 @@ export default {
     color: white;
     text-decoration: none;
     font-weight: bold;
-    padding: 10px 15px;
-    border-radius: 5px;
+    padding: 12px 12px;
+    border-radius: 12px;
     transition: background-color 0.3s ease;
     background-color: #007bff;
 }
 
 .nav-link:hover {
-    background-color: #0056b3;
+    background-color: #ef4444;
 }
 
 /* Sıralama butonu stili */
