@@ -11,6 +11,7 @@ import ProductIndex from './pages/sorular/Index.vue'
 import ProductCreate from './pages/sorular/Create.vue'
 import ProductEdit from './pages/sorular/Edit.vue'
 import Admin from './pages/admin/Index.vue'
+import profil from "./pages/profil/index.vue";
 
 const routes = [
     {path: '/', component: Home},
@@ -18,6 +19,8 @@ const routes = [
     {path: '/sorular', component: ProductIndex},
     {path: '/sorular/ekle', component: ProductCreate},
     {path: '/sorular/:id', component: ProductEdit},
+
+    {path: '/profile', component: profil},
 ];
 
 

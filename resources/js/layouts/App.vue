@@ -4,7 +4,7 @@
             <div class="nav-links">
                 <router-link to="/" class="nav-link" @click="handleNavClick">ANA SAYFA</router-link>
                 <router-link v-if="isAuth" to="/sorular" class="nav-link" @click="handleNavClick">SORULAR</router-link>
-                <button v-if="!isAuth" type="button" @click="openRanking" class="ranking-button">PUAN SIRALAMA</button>
+                <button v-if="!isAuth" type="button" @click="openRanking" class="nav-link">PUAN SIRALAMA</button>
                 <router-link v-if="!isAuth" to="/admin" class="nav-link" @click="handleAdminLoginClick">ADMİN GİRİŞ</router-link>
                 <button v-if="isAuth" type="button" @click="logout" class="logout-button">ADMİN ÇIKIŞ</button>
             </div>
@@ -51,7 +51,7 @@
             </router-link>
             <router-link to="/exam-create" class="bottom-menu-item exam-create">
                 <i class="fas fa-edit"></i>
-                <span>SINAV OLUŞTUR</span>
+                <span style="margin-bottom: 12px;">SINAV OLUŞTUR</span>
             </router-link>
             <router-link to="/categories" class="bottom-menu-item">
                 <i class="fas fa-list"></i>
@@ -132,7 +132,7 @@ export default {
 
 .nav-links {
     display: flex;
-    gap: 15px;
+    gap: 8px;
     flex-wrap: wrap;
 }
 
@@ -267,6 +267,7 @@ export default {
     justify-content: space-around;
     padding: 10px;
     box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 4px;
 }
 
 .bottom-menu-item {
@@ -295,7 +296,7 @@ export default {
 
 /* SINAV OLUŞTUR butonu animasyonu */
 .exam-create {
-    animation: pulse-red 3s infinite, grow-shrink 3s infinite;
+    animation: pulse-red 6s infinite, grow-shrink 3s infinite;
 }
 
 @keyframes pulse-red {
@@ -303,7 +304,7 @@ export default {
         background-color: #e74c3c;
     }
     50% {
-        background-color: #ff6f61;
+        background-color: #0056b3;
     }
 }
 
@@ -311,8 +312,8 @@ export default {
     0%, 100% {
         font-size: 0.9em;
     }
-    50% {
-        font-size: 1.1em;
+    100% {
+        font-size: 0.9em;
     }
 }
 
@@ -320,14 +321,12 @@ export default {
     .nav-container {
         padding: 10px;
     }
-    .nav-link {
-        padding: 8px 15px;
-        font-size: 0.9em;
+    .nav-links {
+        padding: 2px 14px;
+        font-size: 0.8em;
     }
-    .ranking-button {
-        padding: 8px 15px;
-        font-size: 0.9em;
-    }
+
+
     .score-link {
         width: 100%;
     }
@@ -338,7 +337,7 @@ export default {
         background-color: rgba(52, 58, 64, 0.9);
     }
     .bottom-menu-item {
-        font-size: 0.8em;
+        font-size: 0.7em;
     }
 }
 </style>
