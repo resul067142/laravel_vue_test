@@ -10,4 +10,9 @@ export default defineConfig({
             refresh: true,
         }),
     ],
+    build: {
+        rollupOptions: {
+            external: ['chart.js'],  // chart.js'i harici bağımlılık olarak ekle
+        },
+    },
 });
