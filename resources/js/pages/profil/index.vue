@@ -3,16 +3,37 @@
         <div class="col-12 col-md-8 col-lg-6 col-xl-4">
             <div class="card shadow-lg border-0 rounded-lg">
                 <div class="card-body text-center p-4">
-                    <h3 class="mb-3">Admin Girişi</h3>
-                    <form @submit.prevent="login">
-                        <div class="form-group mb-3">
-                            <input class="form-control" placeholder="Email" type="email" v-model="email" required>
+                    <img class="rounded-circle mb-3" :src="user.avatar" alt="Profil Resmi" width="120" height="120" />
+                    <h3 class="mb-3 text-primary">{{ user.name }}</h3>
+                    <p class="text-muted mb-4 font-weight-bold">{{ user.email }}</p>
+                    <div class="d-flex justify-content-between mb-4">
+                        <div>
+                            <h5 class="text-info">{{ examStats.completed }}</h5>
+                            <p class="text-muted font-weight-bold">Tamamlanan Sınavlar</p>
                         </div>
-                        <div class="form-group mb-3">
-                            <input class="form-control" placeholder="Parola" type="password" v-model="password" required>
+                        <div>
+                            <h5 class="text-info">{{ examStats.pending }}</h5>
+                            <p class="text-muted font-weight-bold">Bekleyen Sınavlar</p>
                         </div>
-                        <button class="btn btn-danger btn-block">Giriş Yap</button>
-                    </form>
+                        <div>
+                            <h5 class="text-info">{{ examStats.score }}</h5>
+                            <p class="text-muted font-weight-bold">Toplam Puan</p>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between mb-4">
+                        <div>
+                            <h5 class="text-warning">{{ user.badges.length }}</h5>
+                            <p class="text-muted font-weight-bold">Kazanılan Rozetler</p>
+                        </div>
+                        <div>
+                            <h5 class="text-warning">{{ user.rank }}</h5>
+                            <p class="text-muted font-weight-bold">Kullanıcı Sıralaması</p>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <button style="margin-right: 4px;" class="btn btn-primary flex-fill mr-2" @click="navigateToEditProfile">Profili Düzenle</button>
+                        <button class="btn btn-danger flex-fill ml-2" @click="logout">Çıkış Yap</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -23,25 +44,36 @@
 export default {
     data() {
         return {
-            email: null,
-            password: null
+            user: {
+                name: 'Resul AKTAŞ',
+                email: 'resulaktas.com',
+                avatar: 'https://i.pravatar.cc/120?img=65', // Placeholder avatar resmi
+                badges: ['Başlangıç', 'Orta Seviye', 'İleri Seviye'],
+                rank: 5
+            },
+            examStats: {
+                completed: 15,
+                pending: 20,
+                score: 350
+            }
         }
     },
     methods: {
-        login() {
-            axios.post('api/login', { email: this.email, password: this.password }).then(res => {
-                localStorage.setItem('authToken', res.data.token)
-                setTimeout(() => {
-                    window.location.href = '/sorular'
-                }, 200)
-            })
+        navigateToEditProfile() {
+            // Profili düzenleme sayfasına yönlendirme
+            window.location.href = '/profile/edit';
+        },
+        logout() {
+            // Çıkış yapma işlemi
+            localStorage.removeItem('authToken');
+            window.location.href = '/login';
         }
     }
 }
 </script>
 
 <style scoped>
-/* Mobil ve web görünümü için uyumlu stil */
+/* Profil sayfası için şık ve mobil uyumlu stil */
 .card {
     background-color: #fff;
     border-radius: 10px;
@@ -54,9 +86,9 @@ h3 {
     color: #333;
 }
 
-.form-control {
+p {
     font-size: 1rem;
-    padding: 0.75rem;
+    color: #666;
 }
 
 .btn {
@@ -64,7 +96,11 @@ h3 {
     padding: 0.75rem 1rem;
 }
 
-/* Küçük cihazlar için optimize edilmiş görünüm */
+.d-flex .btn {
+    min-width: 0;
+}
+
+/* Mobil görünüm için optimize edilmiş stil */
 @media (max-width: 576px) {
     .card {
         margin: 0 10px;
@@ -74,9 +110,8 @@ h3 {
         font-size: 1.3rem;
     }
 
-    .form-control {
+    p {
         font-size: 0.9rem;
-        padding: 0.5rem;
     }
 
     .btn {

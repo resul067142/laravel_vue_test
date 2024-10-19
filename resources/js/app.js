@@ -12,6 +12,10 @@ import ProductCreate from './pages/sorular/Create.vue'
 import ProductEdit from './pages/sorular/Edit.vue'
 import Admin from './pages/admin/Index.vue'
 import profil from "./pages/profil/index.vue";
+import sinavolustur from "./pages/sinavolustur/index.vue";
+import kategori from "./pages/kategori/index.vue";
+import rozetler from "./pages/rozetler/index.vue";
+import istatistik from "./pages/istatistik/index.vue";
 
 const routes = [
     {path: '/', component: Home},
@@ -19,6 +23,12 @@ const routes = [
     {path: '/sorular', component: ProductIndex},
     {path: '/sorular/ekle', component: ProductCreate},
     {path: '/sorular/:id', component: ProductEdit},
+
+    {path: '/categories', component: kategori},
+    {path: '/exam-create', component: sinavolustur},
+    {path: '/categories', component: kategori},
+    {path: '/badges', component: rozetler},
+    {path: '/statistics', component: istatistik},
 
     {path: '/profile', component: profil},
 ];
