@@ -16,6 +16,7 @@ import sinavolustur from "./pages/sinavolustur/index.vue";
 import kategori from "./pages/kategori/index.vue";
 import rozetler from "./pages/rozetler/index.vue";
 import istatistik from "./pages/istatistik/index.vue";
+import scores from "./pages/scores/index.vue";
 
 const routes = [
     {path: '/', component: Home},
@@ -29,6 +30,8 @@ const routes = [
     {path: '/categories', component: kategori},
     {path: '/badges', component: rozetler},
     {path: '/statistics', component: istatistik},
+
+    {path: '/scores', component: scores},
 
     {path: '/profile', component: profil},
 ];

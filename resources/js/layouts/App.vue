@@ -1,35 +1,24 @@
 <template>
-    <div id="app">
-        <div class="nav-container">
+    <div id="app" class="app-container">
+        <div class="nav-container" style="background-color: rgba(52, 58, 64, 0.9); padding: 10px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);">
             <div class="nav-links">
                 <router-link to="/" class="nav-link" @click="handleNavClick">ANA SAYFA</router-link>
                 <router-link v-if="isAuth" to="/sorular" class="nav-link" @click="handleNavClick">SORULAR</router-link>
-                <button v-if="!isAuth" type="button" @click="openRanking" class="nav-link">PUAN SIRALAMA</button>
+                <router-link v-if="!isAuth" to="/scores" class="nav-link">PUAN SIRALAMA</router-link>
                 <router-link v-if="!isAuth" to="/admin" class="nav-link" @click="handleAdminLoginClick">ADMİN GİRİŞ</router-link>
                 <button v-if="isAuth" type="button" @click="logout" class="logout-button">ADMİN ÇIKIŞ</button>
             </div>
         </div>
-        <!-- Sıralama menüsü görünürlüğü -->
-        <div v-if="isRankingVisible" class="score-menu">
-            <router-link to="/scores/0-25" class="score-link" @click.prevent="fetchScores('0-25')">0-25</router-link>
-            <router-link to="/scores/26-50" class="score-link" @click.prevent="fetchScores('26-50')">26-50</router-link>
-            <router-link to="/scores/51-75" class="score-link" @click.prevent="fetchScores('51-75')">51-75</router-link>
-            <router-link to="/scores/76-100" class="score-link" @click.prevent="fetchScores('76-100')">76-100</router-link>
-        </div>
+        <!-- Profil sayfası ve diğer içerikler menünün hemen altında yer alacak -->
+        <div class="main-content" style="padding: 20px;">
 
-        <div v-if="scores.length > 0">
-            <div v-for="score in scores" :key="score.id" class="score-item">
-                <img v-if="score.img_url" :src="'/uploads/' + score.img_url" alt="User Photo" class="score-photo">
-                <p>{{ score.name }}</p>
-                <p>{{ score.score }} Puan</p>
-            </div>
-        </div>
+            <router-view></router-view>
 
-        <router-view></router-view>
+        </div>
 
         <!-- Sınav uygulaması onay penceresi -->
         <div v-if="showModal" class="modal">
-            <div class="modal-content">
+            <div class="modal-content" style="background-color: rgba(255, 255, 255, 0.9);">
                 <h2>Sınav Uygulaması</h2>
                 <p>"Hoş geldiniz! Bu Sayfa, Yazılım Dersi Sınav Uygulaması'dır.
                     Kayıt olmadan sınava katılmak için yalnızca bir fotoğraf yükleyip adınızı girmeniz yeterlidir. <hr>
@@ -71,18 +60,9 @@ export default {
         return {
             isAuth: false,
             showModal: true, // Modal pencere başlangıçta görünür
-            scores: [], // Skorları tutacak dizi
-            isRankingVisible: false // Sıralama menüsünün görünürlüğü
         }
     },
     methods: {
-        openRanking() {
-            this.isRankingVisible = !this.isRankingVisible; // Sıralama menüsünü göster
-        },
-        closeRanking() {
-            this.isRankingVisible = false; // Sıralama menüsünü gizle
-            this.scores = []; // Skorları sıfırla
-        },
         logout() {
             localStorage.removeItem('authToken');
             window.location.href = '/admin';
@@ -90,21 +70,11 @@ export default {
         closeModal() {
             this.showModal = false; // Modal pencereyi kapat
         },
-        fetchScores(range) {
-            axios.get(`/api/scores/${range}`)
-                .then(response => {
-                    this.scores = response.data;
-                })
-                .catch(error => {
-                    console.error("Veri alınırken bir hata oluştu:", error);
-                });
-        },
         handleNavClick() {
             this.closeRanking(); // Navigasyona tıklanıldığında sıralama menüsünü kapat
         },
         handleAdminLoginClick() {
             this.closeRanking(); // Admin girişine tıklanıldığında sıralama menüsünü kapat
-            this.scores = []; // Skorları sıfırla
         }
     },
     created() {
@@ -125,7 +95,7 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 10px;
+    padding: 0;
     background-color: #f8f9fa;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
@@ -180,44 +150,6 @@ export default {
 
 .logout-button:hover {
     background-color: #c82333;
-}
-
-/* Puan Menüsü stilleri */
-.score-menu {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin: 20px;
-    gap: 10px;
-}
-
-.score-link {
-    padding: 10px;
-    background-color: #28a745;
-    color: white;
-    text-decoration: none;
-    text-align: center;
-    border-radius: 5px;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    min-width: 100px;
-}
-
-.score-link:hover {
-    background-color: #218838;
-    transform: scale(1.05);
-}
-
-.score-item {
-    text-align: center;
-    margin: 10px 0;
-}
-
-.score-photo {
-    width: 80px;
-    height: 80px;
-    object-fit: cover;
-    border-radius: 50%;
-    margin-bottom: 10px;
 }
 
 /* Modal stilleri */

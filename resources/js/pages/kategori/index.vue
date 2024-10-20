@@ -1,5 +1,10 @@
 <template>
-    <div class="row justify-content-center align-items-center vh-100">
+    <div class="nav-container" style="background-color: rgba(52, 58, 64, 0.9); padding: 10px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);">
+        <router-link to="/" class="nav-link" @click="handleNavClick">ANA SAYFA</router-link>
+        <router-link to="/puan-siralama" class="nav-link" @click="handleNavClick">PUAN SIRALAMA</router-link>
+        <router-link to="/admin-giris" class="nav-link" @click="handleNavClick">ADMİN GİRİŞ</router-link>
+    </div>
+    <div class="row justify-content-center align-items-start mt-4">
         <div class="col-12 col-md-10">
             <div class="card shadow-lg border-0 rounded-lg">
                 <div class="card-body p-4">
@@ -50,6 +55,7 @@ export default {
                 { id: 1, name: 'Matematik', description: 'Matematik kategorisinde sınavlara katılabilirsiniz.' },
                 { id: 2, name: 'Fen Bilimleri', description: 'Fen bilimleri hakkında sınavlara katılabilirsiniz.' },
                 { id: 3, name: 'Tarih', description: 'Tarih sınavları ve bilgilerini içeren kategori.' },
+                { id: 4, name: 'Coğrafya', description: 'Coğrafya konularında sınavlara katılabilirsiniz.' }
             ]
         }
     },

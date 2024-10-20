@@ -1,64 +1,70 @@
 <template>
-    <div class="row justify-content-center align-items-center vh-100">
-        <div class="col-12 col-md-8 col-lg-6 col-xl-4">
-            <div class="card shadow-lg border-0 rounded-lg">
-                <div class="card-body text-center p-4">
-                    <h3 class="mb-3 text-primary">Yeni Sınav Oluştur</h3>
-                    <p class="text-muted mb-4">Sınav bilgilerini doldurarak yeni bir sınav oluşturabilirsiniz. Sınav seviyesini ve diğer detayları seçerek öğrenciler için uygun sınavlar hazırlayın.</p>
-                    <form @submit.prevent="createExam">
-                        <div class="form-group mb-4">
-                            <input
-                                class="form-control"
-                                type="text"
-                                v-model="exam.title"
-                                placeholder="Sınav Adı"
-                                required
-                            />
-                        </div>
-                        <div class="form-group mb-4">
-                            <textarea
-                                class="form-control"
-                                v-model="exam.description"
-                                placeholder="Sınav Açıklaması"
-                                rows="3"
-                                required
-                            ></textarea>
-                        </div>
-                        <div class="form-group mb-4">
-                            <input
-                                class="form-control"
-                                type="number"
-                                v-model="exam.timeLimit"
-                                placeholder="Zaman Sınırı (dakika)"
-                                required
-                            />
-                        </div>
-                        <div class="form-group mb-4">
-                            <label class="form-label d-block mb-2">Sınav Seviyesi</label>
-                            <div class="d-flex justify-content-around">
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" v-model="exam.level" value="kolay" />
-                                    <label class="form-check-label">Kolay</label>
+    <div id="app">
+
+        <div class="main-content" style="margin-top: 10px;">
+            <!-- Sınav oluşturma sayfası -->
+            <div class="row justify-content-center align-items-start" style="margin-top: 20px;">
+                <div class="col-12 col-md-8 col-lg-6 col-xl-4">
+                    <div class="card shadow-lg border-0 rounded-lg">
+                        <div class="card-body text-center p-4">
+                            <h3 class="mb-3 text-primary">Yeni Sınav Oluştur</h3>
+                            <p class="text-muted mb-4">Sınav bilgilerini doldurunuz.</p>
+                            <form @submit.prevent="createExam">
+                                <div class="form-group mb-4">
+                                    <input
+                                        class="form-control"
+                                        type="text"
+                                        v-model="exam.title"
+                                        placeholder="Sınav Adı"
+                                        required
+                                    />
                                 </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" v-model="exam.level" value="orta" />
-                                    <label class="form-check-label">Orta</label>
+                                <div class="form-group mb-4">
+                                    <textarea
+                                        class="form-control"
+                                        v-model="exam.description"
+                                        placeholder="Sınav Açıklaması"
+                                        rows="3"
+                                        required
+                                    ></textarea>
                                 </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" v-model="exam.level" value="zor" />
-                                    <label class="form-check-label">Zor</label>
+                                <div class="form-group mb-4">
+                                    <input
+                                        class="form-control"
+                                        type="number"
+                                        v-model="exam.timeLimit"
+                                        placeholder="Zaman Sınırı (dakika)"
+                                        required
+                                    />
                                 </div>
-                            </div>
+                                <div class="form-group mb-4">
+                                    <label class="form-label d-block mb-2">Sınav Seviyesi</label>
+                                    <div class="d-flex justify-content-around">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" v-model="exam.level" value="kolay" />
+                                            <label class="form-check-label">Kolay</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" v-model="exam.level" value="orta" />
+                                            <label class="form-check-label">Orta</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" v-model="exam.level" value="zor" />
+                                            <label class="form-check-label">Zor</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary btn-block">Sınavı Oluştur</button>
+                            </form>
                         </div>
-                        <button class="btn btn-primary btn-block">Sınavı Oluştur</button>
-                    </form>
-                </div>
-                <div class="card-footer text-center bg-primary text-white py-4">
-                    <p class="mb-2">Yeni kategoriler ekleyerek çeşitliliği artırabilirsiniz!</p>
-                    <button class="btn btn-light" @click="addCategory">Yeni Kategori Ekle</button>
+
+                    </div>
                 </div>
             </div>
         </div>
+
+        <!-- Alt kısımda ikonlu menü -->
+
     </div>
 </template>
 
@@ -66,15 +72,49 @@
 export default {
     data() {
         return {
+            isAuth: false,
+            showModal: true, // Modal pencere başlangıçta görünür
+            scores: [], // Skorları tutacak dizi
+            isRankingVisible: false, // Sıralama menüsünün görünürlüğü
             exam: {
                 title: '',
                 description: '',
                 timeLimit: 0,
                 level: ''
             }
-        };
+        }
     },
     methods: {
+        openRanking() {
+            this.isRankingVisible = !this.isRankingVisible; // Sıralama menüsünü göster
+        },
+        closeRanking() {
+            this.isRankingVisible = false; // Sıralama menüsünü gizle
+            this.scores = []; // Skorları sıfırla
+        },
+        logout() {
+            localStorage.removeItem('authToken');
+            this.$router.push('/admin');
+        },
+        closeModal() {
+            this.showModal = false; // Modal pencereyi kapat
+        },
+        fetchScores(range) {
+            axios.get(`/api/scores/${range}`)
+                .then(response => {
+                    this.scores = response.data;
+                })
+                .catch(error => {
+                    console.error("Veri alınırken bir hata oluştu:", error);
+                });
+        },
+        handleNavClick() {
+            this.closeRanking(); // Navigasyona tıklanıldığında sıralama menüsünü kapat
+        },
+        handleAdminLoginClick() {
+            this.closeRanking(); // Admin girişine tıklanıldığında sıralama menüsünü kapat
+            this.scores = []; // Skorları sıfırla
+        },
         createExam() {
             // Sınav oluşturma işlemi
             if (this.exam.title && this.exam.description && this.exam.timeLimit > 0 && this.exam.level) {
@@ -102,8 +142,17 @@ export default {
         addCategory() {
             alert('Yeni kategori ekleme özelliği henüz aktif değil.');
         }
-    }
-};
+    },
+    created() {
+        // Kullanıcının giriş durumunu kontrol et
+        this.isAuth = !!localStorage.getItem('authToken');
+    },
+    beforeRouteLeave(to, from, next) {
+        // Sıralama menüsünü gizle
+        this.closeRanking();
+        next(); // Route değişikliğine devam et
+    },
+}
 </script>
 
 <style scoped>

@@ -1,5 +1,5 @@
 <template>
-    <div class="row justify-content-center align-items-center vh-100">
+    <div class="row justify-content-center align-items-start mt-4">
         <div class="col-12 col-md-8 col-lg-6 col-xl-4">
             <div class="card shadow-lg border-0 rounded-lg">
                 <div class="card-body text-center p-4">
@@ -61,12 +61,12 @@ export default {
     methods: {
         navigateToEditProfile() {
             // Profili düzenleme sayfasına yönlendirme
-            window.location.href = '/profile/edit';
+            this.$router.push('/profile/edit');
         },
         logout() {
             // Çıkış yapma işlemi
             localStorage.removeItem('authToken');
-            window.location.href = '/login';
+            this.$router.push('/login');
         }
     }
 }
