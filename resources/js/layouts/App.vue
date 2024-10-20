@@ -77,7 +77,7 @@ export default {
     },
     methods: {
         openRanking() {
-            this.isRankingVisible = true; // Sıralama menüsünü göster
+            this.isRankingVisible = !this.isRankingVisible; // Sıralama menüsünü göster
         },
         closeRanking() {
             this.isRankingVisible = false; // Sıralama menüsünü gizle
@@ -115,7 +115,7 @@ export default {
         // Sıralama menüsünü gizle
         this.closeRanking();
         next(); // Route değişikliğine devam et
-    }
+    },
 }
 </script>
 

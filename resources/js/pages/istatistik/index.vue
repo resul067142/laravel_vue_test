@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import { Chart, registerables } from 'chart.js';
+import { Chart, registerables } from 'chart.js/auto';
 import { nextTick } from 'vue';
 
 export default {
