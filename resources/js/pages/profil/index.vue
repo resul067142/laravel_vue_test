@@ -1,5 +1,5 @@
 <template>
-    <div class="row justify-content-center align-items-start mt-4">
+    <div class="row justify-content-center align-items-start" style="margin-top: 0;">
         <div class="col-12 col-md-8 col-lg-6 col-xl-4">
             <div class="card shadow-lg border-0 rounded-lg">
                 <div class="card-body text-center p-4">
@@ -79,6 +79,7 @@ export default {
     border-radius: 10px;
     padding: 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 0;
 }
 
 h3 {

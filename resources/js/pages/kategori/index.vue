@@ -1,12 +1,7 @@
 <template>
-    <div class="nav-container" style="background-color: rgba(52, 58, 64, 0.9); padding: 10px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);">
-        <router-link to="/" class="nav-link" @click="handleNavClick">ANA SAYFA</router-link>
-        <router-link to="/puan-siralama" class="nav-link" @click="handleNavClick">PUAN SIRALAMA</router-link>
-        <router-link to="/admin-giris" class="nav-link" @click="handleNavClick">ADMİN GİRİŞ</router-link>
-    </div>
-    <div class="row justify-content-center align-items-start mt-4">
-        <div class="col-12 col-md-10">
-            <div class="card shadow-lg border-0 rounded-lg">
+    <div class="row justify-content-center align-items-start" style="margin: 0; padding: 0; position: relative; top: 0; margin-top: 0;">
+        <div class="col-12 col-md-10" style="padding: 0; margin: 0;">
+            <div class="card shadow-lg border-0 rounded-lg" style="margin: 0; padding: 0;">
                 <div class="card-body p-4">
                     <h3 class="mb-4 text-center text-primary">Kategoriler</h3>
                     <div v-if="categories.length" class="category-list">
@@ -14,7 +9,7 @@
                             <div
                                 v-for="category in categories"
                                 :key="category.id"
-                                class="col-md-6 mb-3"
+                                class="col-md-6 mb-0" style="margin-bottom: 5px;"
                             >
                                 <div class="category-item p-2 shadow-sm rounded-lg">
                                     <div class="d-flex justify-content-between align-items-center mb-2">
@@ -52,10 +47,9 @@ export default {
     data() {
         return {
             categories: [
-                { id: 1, name: 'Matematik', description: 'Matematik kategorisinde sınavlara katılabilirsiniz.' },
-                { id: 2, name: 'Fen Bilimleri', description: 'Fen bilimleri hakkında sınavlara katılabilirsiniz.' },
-                { id: 3, name: 'Tarih', description: 'Tarih sınavları ve bilgilerini içeren kategori.' },
-                { id: 4, name: 'Coğrafya', description: 'Coğrafya konularında sınavlara katılabilirsiniz.' }
+                { id: 1, name: 'Java', description: 'Java programlama dili ve uygulamalarına katılabilirsiniz.' },
+                { id: 2, name: 'SQL', description: 'SQL veritabanı sorguları ve veri yönetimi hakkında bilgi edinin.' },
+                { id: 3, name: 'JavaScript', description: 'JavaScript ile web geliştirme ve interaktif uygulamalar hakkında bilgi edinin.' }
             ]
         }
     },
@@ -91,6 +85,7 @@ export default {
     border-radius: 15px;
     padding: 20px;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    margin-top: 0;
 }
 
 h3 {
@@ -101,7 +96,8 @@ h3 {
 .category-item {
     background-color: #e9ecef;
     border-left: 5px solid #17a2b8;
-    padding: 10px;
+    padding: 1px;
+    height: auto;
 }
 
 h5 {
@@ -110,7 +106,7 @@ h5 {
 }
 
 p {
-    font-size: 1rem;
+    font-size: 0.7rem;
     color: #666;
 }
 

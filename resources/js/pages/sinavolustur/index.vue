@@ -1,9 +1,9 @@
 <template>
     <div id="app">
 
-        <div class="main-content" style="margin-top: 10px;">
+        <div class="main-content" style="margin-top: 0;">
             <!-- Sınav oluşturma sayfası -->
-            <div class="row justify-content-center align-items-start" style="margin-top: 20px;">
+            <div class="row justify-content-center align-items-start" style="margin-top: 0;">
                 <div class="col-12 col-md-8 col-lg-6 col-xl-4">
                     <div class="card shadow-lg border-0 rounded-lg">
                         <div class="card-body text-center p-4">
@@ -54,7 +54,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <button class="btn btn-primary btn-block">Sınavı Oluştur</button>
+                                <button class="btn btn-warning btn-block" style="font-size: 1.3rem; padding: 1rem 2rem;" @mouseover="hover = true" @mouseleave="hover = false" :style="hover ? 'background-color: red; border-color: red;' : 'background-color: #ffc107; border-color: #ffc107;'">Sınavı Oluştur</button>
                             </form>
                         </div>
 
@@ -72,6 +72,7 @@
 export default {
     data() {
         return {
+            hover: false,
             isAuth: false,
             showModal: true, // Modal pencere başlangıçta görünür
             scores: [], // Skorları tutacak dizi
@@ -156,6 +157,10 @@ export default {
 </script>
 
 <style scoped>
+.btn-warning:hover {
+    background-color: red !important;
+    border-color: red !important;
+}
 /* Sınav oluşturma sayfası için şık ve mobil uyumlu stil */
 .card {
     background-color: #fff;

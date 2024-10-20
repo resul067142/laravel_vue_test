@@ -10,7 +10,7 @@
             </div>
         </div>
         <!-- Profil sayfası ve diğer içerikler menünün hemen altında yer alacak -->
-        <div class="main-content" style="padding: 20px;">
+        <div class="main-content" style="padding: 2px;">
 
             <router-view></router-view>
 

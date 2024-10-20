@@ -1,5 +1,5 @@
 <template>
-    <div class="container my-5">
+    <div class="container" style="margin-top: 0;">
         <div class="text-center mb-5">
             <h2 class="display-4 text-primary">Rozet Koleksiyonu</h2>
             <p class="lead text-muted">Kazandığınız tüm rozetleri burada keşfedin ve başarılarınızla gurur duyun. Daha fazla rozet kazanmak için yeni hedefler belirleyin ve gelişmeye devam edin!</p>
@@ -20,7 +20,7 @@
             </div>
         </div>
         <div class="text-center mt-5">
-                        <h4 class="text-info">Daha Fazla Rozet Kazan!</h4>
+            <h4 class="text-info">Daha Fazla Rozet Kazan!</h4>
             <p class="text-dark">Kendinize meydan okuyun ve daha fazla rozet kazanmak için yeni sınavlara katılın. Başarılarınızla ilham verici olun!</p>
         </div>
     </div>

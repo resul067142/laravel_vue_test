@@ -1,27 +1,23 @@
 <template>
-    <div class="d-flex justify-content-center align-items-center vh-100">
-        <div class="container">
+    <div class="d-flex justify-content-center align-items-center" style="min-height: 100vh; margin: 0; padding: 0; position: fixed; top: 0; left: 0; right: 0;">
+        <div class="container" style="margin: 0; padding: 0; width: 100%;">
             <div class="card shadow-lg border-0 rounded-lg">
-                <div class="card-body p-3">
+                <div class="card-body p-1">
                     <h3 class="mb-3 text-center">Sınav Sonuçları ve Grafikleri</h3>
-                    <!-- Grafikler -->
                     <div class="row">
-                        <!-- Bar Grafik -->
-                        <div class="col-12 col-md-6 mb-3">
+                        <div class="col-12 col-md-7 mb-7">
                             <div class="p-2 bg-light rounded">
                                 <h5 class="text-center">SQL Dersi Sonuçları (Bar Grafik)</h5>
                                 <canvas id="barChart" class="chart"></canvas>
                             </div>
                         </div>
-                        <!-- Pie Grafik -->
                         <div class="col-12 col-md-6 mb-3">
                             <div class="p-2 bg-light rounded">
                                 <h5 class="text-center">Java Dersi Başarı Oranı (Pie Grafik)</h5>
                                 <canvas id="pieChart" class="chart"></canvas>
                             </div>
                         </div>
-                        <!-- Line Grafik -->
-                        <div class="col-12 mb-3">
+                        <div class="col-12 mb-1">
                             <div class="p-2 bg-light rounded">
                                 <h5 class="text-center">Aylık Sınav Başarı Artışı (Line Grafik)</h5>
                                 <canvas id="lineChart" class="chart"></canvas>
@@ -40,12 +36,9 @@ import { nextTick } from 'vue';
 
 export default {
     mounted() {
-        // Vue.nextTick ile grafikleri oluşturmak
         nextTick(() => {
-            // Chart.js bileşenlerini kaydetme
             Chart.register(...registerables);
 
-            // Bar Grafik
             const barCtx = document.getElementById('barChart').getContext('2d');
             new Chart(barCtx, {
                 type: 'bar',
@@ -67,7 +60,6 @@ export default {
                 }
             });
 
-            // Pie Grafik
             const pieCtx = document.getElementById('pieChart').getContext('2d');
             new Chart(pieCtx, {
                 type: 'pie',
@@ -89,7 +81,6 @@ export default {
                 }
             });
 
-            // Line Grafik
             const lineCtx = document.getElementById('lineChart').getContext('2d');
             new Chart(lineCtx, {
                 type: 'line',
@@ -117,13 +108,12 @@ export default {
 </script>
 
 <style scoped>
-/* Grafik sayfası için şık ve mobil uyumlu stil */
 .card {
-    margin-top: 2px;
     background-color: #fff;
     border-radius: 10px;
     padding: 15px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 0 !important;
 }
 
 h3 {
@@ -132,7 +122,7 @@ h3 {
 }
 
 canvas.chart {
-    max-height: 100px;  /* Maksimum yüksekliği küçülterek grafiklerin daha kompakt görünmesini sağla */
+    max-height: 100px;
     width: 100%;
 }
 
@@ -142,7 +132,6 @@ h5 {
     margin-bottom: 10px;
 }
 
-/* Mobil görünüm için optimize edilmiş stil */
 @media (max-width: 576px) {
     .card {
         margin: 0 5px;
@@ -157,7 +146,7 @@ h5 {
     }
 
     canvas.chart {
-        height: 120px;  /* Mobil cihazlarda grafik boyutunu küçült */
+        height: 120px;
     }
 }
 </style>
