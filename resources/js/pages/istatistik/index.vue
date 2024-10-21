@@ -43,7 +43,7 @@ export default {
             new Chart(barCtx, {
                 type: 'bar',
                 data: {
-                    labels: ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs'],
+                    labels: ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs' ],
                     datasets: [
                         {
                             label: 'SQL Dersi Sonuçları (puan)',
