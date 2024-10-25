@@ -88,7 +88,6 @@ export default {
     },
 }
 </script>
-
 <style scoped>
 /* Nav Container Stilleri */
 .nav-container {
