@@ -1,9 +1,12 @@
 <template>
-    <div class="row justify-content-center align-items-center vh-100">
+    <div  class="row justify-content-center align-items-center vh-100">
         <div class="col-12 col-md-8 col-lg-6 col-xl-4">
             <div class="card shadow-lg border-0 rounded-lg">
-                <div class="card-body text-center p-4">
-                    <h3 class="mb-3">Admin Girişi</h3>
+                <h1 style="text-align: center" class="mb-6">Admin Girişi</h1>
+                <div class="card-body text-center p-1">
+                    <img src="../admin/r.jpeg" alt="Admin Photo" class="img-fluid rounded-circle mb-3" style="width: 100px; height: 100px;">
+                    <h4 class="mb-3">Hoşgeldin Resul AKTAŞ</h4>
+
                     <form @submit.prevent="login">
                         <div class="form-group mb-3">
                             <input class="form-control" placeholder="Email" type="email" v-model="email" required>

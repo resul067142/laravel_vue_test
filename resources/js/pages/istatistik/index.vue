@@ -1,38 +1,41 @@
 <template>
-    <div class="d-flex justify-content-center align-items-center" style="min-height: 100vh; margin: 0; padding: 0; position: fixed; top: 0; left: 0; right: 0;">
-        <div class="container" style="margin: 0; padding: 0; width: 100%;">
-            <div class="card shadow-lg border-0 rounded-lg">
-                <div class="card-body p-1">
-                    <h3 class="mb-3 text-center">Sınav Sonuçları ve Grafikleri</h3>
-                    <div class="row">
-                        <div class="col-12 col-md-7 mb-7">
-                            <div class="p-2 bg-light rounded">
-                                <h5 class="text-center">SQL Dersi Sonuçları (Bar Grafik)</h5>
-                                <canvas id="barChart" class="chart"></canvas>
-                            </div>
+    <div class="container" style="margin: 0; padding: 0; width: 100%;">
+        <div class="card shadow-lg border-0 rounded-lg">
+            <div class="card-body p-1">
+
+
+                <hr> <h3 class="mb-3 text-center">Sınav Sonuçları ve Grafikleri</h3>
+                <div class="row">
+                    <div class="col-12 col-md-6 mb-3">
+                        <div class="p-2 bg-light rounded">
+
+                            <hr><h5 class="text-center">SQL Dersi Sonuçları (Bar Grafik)</h5>
+                            <canvas id="barChart" class="chart"></canvas>
                         </div>
-                        <div class="col-12 col-md-6 mb-3">
-                            <div class="p-2 bg-light rounded">
-                                <h5 class="text-center">Java Dersi Başarı Oranı (Pie Grafik)</h5>
-                                <canvas id="pieChart" class="chart"></canvas>
-                            </div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-3">
+                        <div class="p-2 bg-light rounded">
+
+                            <hr><h5 class="text-center">Java Dersi Başarı Oranı (Pie Grafik)</h5>
+                            <canvas id="pieChart" class="chart"></canvas>
                         </div>
-                        <div class="col-12 mb-1">
-                            <div class="p-2 bg-light rounded">
-                                <h5 class="text-center">Aylık Sınav Başarı Artışı (Line Grafik)</h5>
-                                <canvas id="lineChart" class="chart"></canvas>
-                            </div>
+                    </div>
+                    <div class="col-12 mb-1">
+                        <div class="p-2 bg-light rounded">
+                            <hr><h5 class="text-center">Aylık Sınav Başarı Artışı (Line Grafik)</h5>
+                            <canvas id="lineChart" class="chart"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
 </template>
 
 <script>
-import { Chart, registerables } from 'chart.js/auto';
-import { nextTick } from 'vue';
+import {Chart, registerables} from 'chart.js/auto';
+import {nextTick} from 'vue';
 
 export default {
     mounted() {
@@ -43,7 +46,7 @@ export default {
             new Chart(barCtx, {
                 type: 'bar',
                 data: {
-                    labels: ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs' ],
+                    labels: ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs'],
                     datasets: [
                         {
                             label: 'SQL Dersi Sonuçları (puan)',

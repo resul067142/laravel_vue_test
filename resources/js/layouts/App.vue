@@ -9,6 +9,7 @@
                 <button v-if="isAuth" type="button" @click="logout" class="logout-button">ADMİN ÇIKIŞ</button>
             </div>
         </div>
+
         <!-- Profil sayfası ve diğer içerikler menünün hemen altında yer alacak -->
         <div class="main-content" style="padding: 2px;">
 
@@ -32,11 +33,11 @@
         <div class="bottom-menu">
             <router-link to="/profile" class="bottom-menu-item">
                 <i class="fas fa-user"></i>
-                <span>PROFİL</span>
+                <span>KULLANICI PROFİLİ</span>
             </router-link>
             <router-link to="/badges" class="bottom-menu-item">
                 <i class="fas fa-trophy"></i>
-                <span>ROZETLER</span>
+                <span>ROZET SAYFASI</span>
             </router-link>
             <router-link to="/exam-create" class="bottom-menu-item exam-create">
                 <i class="fas fa-edit"></i>
@@ -44,11 +45,11 @@
             </router-link>
             <router-link to="/categories" class="bottom-menu-item">
                 <i class="fas fa-list"></i>
-                <span>KATEGORİ</span>
+                <span>SINAV KATEGORİ SEÇİMİ</span>
             </router-link>
             <router-link to="/statistics" class="bottom-menu-item">
                 <i class="fas fa-chart-bar"></i>
-                <span>İSTATİSTİK</span>
+                <span>SINAV İSTATİSTİKLERİ</span>
             </router-link>
         </div>
     </div>

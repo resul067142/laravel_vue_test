@@ -17,6 +17,10 @@ import kategori from "./pages/kategori/index.vue";
 import rozetler from "./pages/rozetler/index.vue";
 import istatistik from "./pages/istatistik/index.vue";
 import scores from "./pages/scores/index.vue";
+import ProfilDüzenle from './pages/profil/profildüzenle.vue';
+import kayitol from "./pages/profil/kayitol.vue";
+import giris from "./pages/profil/giris.vue";
+
 
 const routes = [
     {path: '/', component: Home},
@@ -34,6 +38,11 @@ const routes = [
     {path: '/scores', component: scores},
 
     {path: '/profile', component: profil},
+    {path: '/kayitol', component: kayitol},
+    {path: '/giris', component: giris},
+
+    { path: '/profile/edit', component: ProfilDüzenle },
+
 ];
 
 

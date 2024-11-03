@@ -3,7 +3,9 @@
         <div class="col-12 col-md-8 col-lg-6 col-xl-4">
             <div class="card shadow-lg border-0 rounded-lg">
                 <div class="card-body text-center p-4">
-                    <img class="rounded-circle mb-3" :src="user.avatar" alt="Profil Resmi" width="120" height="120" />
+                    <img src="../admin/r.jpeg" alt="Admin Photo" class="img-fluid rounded-circle mb-3" style="width: 100px; height: 100px;">
+
+<!--                    <img class="rounded-circle mb-3" :src="user.avatar" alt="Profil Resmi" width="150" height="150" style="object-fit: cover;">-->
                     <h3 class="mb-3 text-primary">{{ user.name }}</h3>
                     <p class="text-muted mb-4 font-weight-bold">{{ user.email }}</p>
                     <div class="d-flex justify-content-between mb-4">
@@ -47,7 +49,7 @@ export default {
             user: {
                 name: 'Resul AKTAŞ',
                 email: 'resulaktas.com',
-                avatar: 'https://i.pravatar.cc/120?img=65', // Placeholder avatar resmi
+                avatar: "/admin/r.jpeg", // Placeholder avatar resmi
                 badges: ['Başlangıç', 'Orta Seviye', 'İleri Seviye'],
                 rank: 5
             },
@@ -66,7 +68,7 @@ export default {
         logout() {
             // Çıkış yapma işlemi
             localStorage.removeItem('authToken');
-            this.$router.push('/login');
+            this.$router.push('/');
         }
     }
 }

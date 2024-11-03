@@ -3,7 +3,7 @@
         <div class="col-12 col-md-10" style="padding: 0; margin: 0;">
             <div class="card shadow-lg border-0 rounded-lg" style="margin: 0; padding: 0;">
                 <div class="card-body p-4">
-                    <h3 class="mb-4 text-center text-primary">Kategoriler</h3>
+                    <h3 class="mb-4 text-center text-primary">Sınav Kategoriler</h3>
                     <div v-if="categories.length" class="category-list">
                         <div class="row">
                             <div

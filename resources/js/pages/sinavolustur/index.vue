@@ -19,15 +19,8 @@
                                         required
                                     />
                                 </div>
-                                <div class="form-group mb-4">
-                                    <textarea
-                                        class="form-control"
-                                        v-model="exam.description"
-                                        placeholder="Sınav Açıklaması"
-                                        rows="3"
-                                        required
-                                    ></textarea>
-                                </div>
+
+                                <p class="text-muted mb-4">Sınav Süresi Giriniz</p>
                                 <div class="form-group mb-4">
                                     <input
                                         class="form-control"
@@ -37,22 +30,46 @@
                                         required
                                     />
                                 </div>
+
                                 <div class="form-group mb-4">
-                                    <label class="form-label d-block mb-2">Sınav Seviyesi</label>
-                                    <div class="d-flex justify-content-around">
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" v-model="exam.level" value="kolay" />
-                                            <label class="form-check-label">Kolay</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" v-model="exam.level" value="orta" />
-                                            <label class="form-check-label">Orta</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" v-model="exam.level" value="zor" />
-                                            <label class="form-check-label">Zor</label>
+                                    <input
+                                        class="form-control"
+                                        type="text"
+                                        v-model="exam.topic"
+                                        placeholder="Sınav Konusu"
+                                        required
+                                    />
+                                </div>
+                                <div class="form-group mb-4">
+                                    <h5 class="text-primary">Sınav Soruları</h5>
+                                    <div v-for="(question, index) in exam.questions" :key="index" class="mb-3">
+                                        <input
+                                            class="form-control mb-2"
+                                            type="text"
+                                            v-model="question.text"
+                                            placeholder="Soru Metni"
+                                            required
+                                        />
+                                        <div v-for="(option, optIndex) in question.options" :key="optIndex" class="form-group mb-2">
+                                            <input
+                                                class="form-control"
+                                                type="text"
+                                                v-model="option.text"
+                                                placeholder="Seçenek"
+                                                required
+                                            />
+                                            <div class="form-check form-check-inline">
+                                                <input
+                                                    class="form-check-input"
+                                                    type="radio"
+                                                    v-model="question.correctOption"
+                                                    :value="optIndex"
+                                                />
+                                                <label class="form-check-label">Doğru Seçenek</label>
+                                            </div>
                                         </div>
                                     </div>
+                                    <button class="btn btn-primary mt-3" @click="addQuestion">Yeni Soru Ekle</button>
                                 </div>
                                 <button class="btn btn-warning btn-block" style="font-size: 1.3rem; padding: 1rem 2rem;" @mouseover="hover = true" @mouseleave="hover = false" :style="hover ? 'background-color: red; border-color: red;' : 'background-color: #ffc107; border-color: #ffc107;'">Sınavı Oluştur</button>
                             </form>
@@ -80,8 +97,10 @@ export default {
             exam: {
                 title: '',
                 description: '',
-                timeLimit: 0,
-                level: ''
+                timeLimit: 30,
+                level: '',
+                topic: '',
+                questions: []
             }
         }
     },
@@ -118,13 +137,15 @@ export default {
         },
         createExam() {
             // Sınav oluşturma işlemi
-            if (this.exam.title && this.exam.description && this.exam.timeLimit > 0 && this.exam.level) {
+            if (this.exam.title && this.exam.description && this.exam.timeLimit > 0 && this.exam.level && this.exam.topic && this.exam.questions.length > 0) {
                 // Sınav verileri JSON formatında
                 const newExam = {
                     title: this.exam.title,
                     description: this.exam.description,
                     timeLimit: this.exam.timeLimit,
-                    level: this.exam.level
+                    level: this.exam.level,
+                    topic: this.exam.topic,
+                    questions: this.exam.questions
                 };
                 console.log('Sınav oluşturuluyor...', newExam);
                 // Örneğin, bir API isteği yaparak sınavı oluşturabilirsiniz
@@ -142,6 +163,9 @@ export default {
         },
         addCategory() {
             alert('Yeni kategori ekleme özelliği henüz aktif değil.');
+        },
+        addQuestion() {
+            this.exam.questions.push({ text: '', options: [{ text: '' }, { text: '' }, { text: '' }, { text: '' }], correctOption: null });
         }
     },
     created() {
