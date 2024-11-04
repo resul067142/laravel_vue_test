@@ -20,6 +20,9 @@ import scores from "./pages/scores/index.vue";
 import ProfilDüzenle from './pages/profil/profildüzenle.vue';
 import kayitol from "./pages/profil/kayitol.vue";
 import giris from "./pages/profil/giris.vue";
+import video from "./pages/egitim/video.vue";
+import belge from "./pages/egitim/belge.vue";
+import harita from "./pages/harita/index.vue";
 
 
 const routes = [
@@ -40,6 +43,14 @@ const routes = [
     {path: '/profile', component: profil},
     {path: '/kayitol', component: kayitol},
     {path: '/giris', component: giris},
+    {path: '/video', component: video},
+    {path: '/belge', component: belge},
+    {path: '/belge', component: belge},
+    {path: '/harita', component: harita},
+
+
+
+
 
     { path: '/profile/edit', component: ProfilDüzenle },
 

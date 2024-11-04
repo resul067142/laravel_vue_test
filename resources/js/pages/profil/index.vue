@@ -5,7 +5,7 @@
                 <div class="card-body text-center p-4">
                     <img src="../admin/r.jpeg" alt="Admin Photo" class="img-fluid rounded-circle mb-3" style="width: 100px; height: 100px;">
 
-<!--                    <img class="rounded-circle mb-3" :src="user.avatar" alt="Profil Resmi" width="150" height="150" style="object-fit: cover;">-->
+                    <!--                    <img class="rounded-circle mb-3" :src="user.avatar" alt="Profil Resmi" width="150" height="150" style="object-fit: cover;">-->
                     <h3 class="mb-3 text-primary">{{ user.name }}</h3>
                     <p class="text-muted mb-4 font-weight-bold">{{ user.email }}</p>
                     <div class="d-flex justify-content-between mb-4">

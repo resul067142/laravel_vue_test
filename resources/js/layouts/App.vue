@@ -1,11 +1,21 @@
 <template>
     <div id="app" class="app-container">
-        <div class="nav-container" style="background-color: rgba(52, 58, 64, 0.9); padding: 10px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);">
-            <div class="nav-links">
+        <div class="nav-container" style="background-color: rgba(52, 58, 64, 0.9); padding: 5px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); display: flex; flex-wrap: nowrap; overflow-x: auto;">
+            <div class="nav-links" style="display: flex; gap: 5px; flex-wrap: nowrap;">
                 <router-link to="/" class="nav-link" @click="handleNavClick">ANA SAYFA</router-link>
                 <router-link v-if="isAuth" to="/sorular" class="nav-link" @click="handleNavClick">SORULAR</router-link>
-                <router-link v-if="!isAuth" to="/scores" class="nav-link">PUAN SIRALAMA</router-link>
+                <router-link v-if="!isAuth" to="/scores" class="nav-link">SIRALAMA</router-link>
                 <router-link v-if="!isAuth" to="/admin" class="nav-link" @click="handleAdminLoginClick">ADMİN GİRİŞ</router-link>
+                <div class="nav-link dropdown" @click="toggleDropdown">
+                    EĞİTİM
+                    <div v-if="dropdownVisible" class="dropdown-content" :style="dropdownPosition" @mouseleave="closeDropdown">
+                        <router-link to="/video" class="dropdown-item" @click="handleNavClick">Video</router-link>
+                        <router-link to="/belge" class="dropdown-item" @click="handleNavClick">Belge</router-link>
+                        <router-link to="/menu1" class="dropdown-item" @click="handleNavClick">Menu1</router-link>
+                        <router-link to="/menu2" class="dropdown-item" @click="handleNavClick">Menu2</router-link>
+                    </div>
+                </div>
+                <router-link to="/harita" class="nav-link" @click="handleNavClick">HARİTA</router-link>
                 <button v-if="isAuth" type="button" @click="logout" class="logout-button">ADMİN ÇIKIŞ</button>
             </div>
         </div>
@@ -61,6 +71,8 @@ export default {
         return {
             isAuth: false,
             showModal: true, // Modal pencere başlangıçta görünür
+            dropdownVisible: false, // Eğitim menüsü için dropdown başlangıçta kapalı
+            dropdownPosition: {}, // Dropdown menünün pozisyon bilgisi
         }
     },
     methods: {
@@ -73,10 +85,32 @@ export default {
         },
         handleNavClick() {
             this.closeRanking(); // Navigasyona tıklanıldığında sıralama menüsünü kapat
+            this.dropdownVisible = false; // Dropdown menüyü kapat
         },
         handleAdminLoginClick() {
             this.closeRanking(); // Admin girişine tıklanıldığında sıralama menüsünü kapat
-        }
+        },
+        toggleDropdown() {
+            this.dropdownVisible = !this.dropdownVisible; // Dropdown menüsünü aç/kapat
+            if (this.dropdownVisible) {
+                const dropdown = this.$el.querySelector('.dropdown');
+                const rect = dropdown.getBoundingClientRect();
+                this.dropdownPosition = {
+                    position: 'fixed',
+                    top: `${rect.bottom}px`,
+                    left: `${rect.left}px`,
+                    backgroundColor: '#f8f9fa',
+                    boxShadow: '0 2px 5px rgba(0, 0, 0, 0.2)',
+                    borderRadius: '5px',
+                    zIndex: 1000,
+                    padding: '10px',
+                    minWidth: '150px',
+                };
+            }
+        },
+        closeDropdown() {
+            this.dropdownVisible = false; // Dropdown menüyü kapat
+        },
     },
     created() {
         // Kullanıcının giriş durumunu kontrol et
@@ -89,6 +123,7 @@ export default {
     },
 }
 </script>
+
 <style scoped>
 /* Nav Container Stilleri */
 .nav-container {
@@ -98,26 +133,61 @@ export default {
     padding: 0;
     background-color: #f8f9fa;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
 }
 
 .nav-links {
     display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
+    gap: 5px;
+    flex-wrap: nowrap;
 }
 
 .nav-link {
     color: white;
     text-decoration: none;
     font-weight: bold;
-    padding: 12px 12px;
+    padding: 8px 10px;
     border-radius: 12px;
     transition: background-color 0.3s ease;
     background-color: #007bff;
+    white-space: nowrap;
 }
 
 .nav-link:hover {
     background-color: #ef4444;
+}
+
+/* Dropdown menü stilleri */
+.dropdown {
+    position: relative;
+    cursor: pointer;
+}
+
+.dropdown-content {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 100%;
+    left: 0;
+    background-color: #f8f9fa;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    z-index: 1000;
+    padding: 10px;
+    min-width: 150px;
+}
+
+.dropdown-item {
+    padding: 8px;
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.dropdown-item:hover {
+    background-color: #ff0000;
 }
 
 /* Sıralama butonu stili */
@@ -257,7 +327,6 @@ export default {
         padding: 2px 14px;
         font-size: 0.8em;
     }
-
 
     .score-link {
         width: 100%;
