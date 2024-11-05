@@ -11,7 +11,7 @@
                     <div v-if="dropdownVisible" class="dropdown-content" :style="dropdownPosition" @mouseleave="closeDropdown">
                         <router-link to="/video" class="dropdown-item" @click="handleNavClick">Video</router-link>
                         <router-link to="/belge" class="dropdown-item" @click="handleNavClick">Belge</router-link>
-                        <router-link to="/menu1" class="dropdown-item" @click="handleNavClick">Menu1</router-link>
+                        <router-link to="/Antireman" class="dropdown-item" @click="handleNavClick">Antireman</router-link>
                         <router-link to="/menu2" class="dropdown-item" @click="handleNavClick">Menu2</router-link>
                     </div>
                 </div>

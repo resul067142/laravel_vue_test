@@ -23,6 +23,7 @@ import giris from "./pages/profil/giris.vue";
 import video from "./pages/egitim/video.vue";
 import belge from "./pages/egitim/belge.vue";
 import harita from "./pages/harita/index.vue";
+import antireman from "./pages/egitim/Antireman.vue";
 
 
 const routes = [
@@ -47,6 +48,7 @@ const routes = [
     {path: '/belge', component: belge},
     {path: '/belge', component: belge},
     {path: '/harita', component: harita},
+    {path: '/Antireman', component: antireman},
 
 
 
