@@ -12,7 +12,7 @@
                         <router-link to="/video" class="dropdown-item" @click="handleNavClick">Video</router-link>
                         <router-link to="/belge" class="dropdown-item" @click="handleNavClick">Belge</router-link>
                         <router-link to="/Antireman" class="dropdown-item" @click="handleNavClick">Antireman</router-link>
-                        <router-link to="/menu2" class="dropdown-item" @click="handleNavClick">Menu2</router-link>
+                        <router-link to="/dosya" class="dropdown-item" @click="handleNavClick">dosya</router-link>
                     </div>
                 </div>
                 <router-link to="/harita" class="nav-link" @click="handleNavClick">HARİTA</router-link>

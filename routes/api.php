@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\SorularController;
 use App\Http\Controllers\Api\ScoreController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\FileController; // FileController'ı dahil ettik
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
@@ -24,3 +25,7 @@ Route::get('/scores', [ScoreController::class, 'index']);
 Route::get('/scores/{range}', [ScoreController::class, 'indexByRange']); // Puan aralığı rotası
 Route::post('/scores', [ScoreController::class, 'store']);
 
+// Dosya işlemleri
+Route::get('/files', [FileController::class, 'index']);
+Route::post('/files', [FileController::class, 'store']);
+Route::get('/files/{id}/download', [FileController::class, 'download']);
