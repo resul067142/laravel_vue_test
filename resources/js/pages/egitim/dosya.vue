@@ -86,7 +86,7 @@ export default {
         return {
             filesToUpload: [],  // Yüklenecek dosyalar
             serverFiles: [],    // Sunucudan gelen dosyalar
-            selectedCategory: '',  // Seçilen kategori
+            selectedCategory: 'word',  // Seçilen kategori
             categories: ['excel', 'word', 'powerpoint'],  // Kategoriler listesi
             uploaderName: 'Kullanıcı Adı', // Yükleyen kişinin adı
             selectedImage: null, // Seçilen görsel
