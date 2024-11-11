@@ -13,6 +13,8 @@
                         <router-link to="/belge" class="dropdown-item" @click="handleNavClick">Belge</router-link>
                         <router-link to="/Antireman" class="dropdown-item" @click="handleNavClick">Antireman</router-link>
                         <router-link to="/dosya" class="dropdown-item" @click="handleNavClick">dosya</router-link>
+                        <router-link to="/puanlama" class="dropdown-item" @click="handleNavClick">puanlama</router-link>
+                        <router-link to="/soytakip" class="dropdown-item" @click="handleNavClick">soytakip</router-link>
                     </div>
                 </div>
                 <router-link to="/harita" class="nav-link" @click="handleNavClick">HARİTA</router-link>

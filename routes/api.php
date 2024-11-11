@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FileController; // FileController'ı dahil ettik
 
+use App\Http\Controllers\PuanlafotoController;
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
@@ -29,3 +31,11 @@ Route::post('/scores', [ScoreController::class, 'store']);
 Route::get('/files', [FileController::class, 'index']);
 Route::post('/files', [FileController::class, 'store']);
 Route::get('/files/{id}/download', [FileController::class, 'download']);
+
+Route::get('/api/puanlafoto', [PuanlafotoController::class, 'index']);
+Route::post('/api/puanlafoto', [PuanlafotoController::class, 'store']);
+Route::post('/api/puanlafoto/yukle', [PuanlafotoController::class, 'yukle']);
+Route::post('/test', function() {
+    return response()->json(['message' => 'Test başarılı'], 200);
+});
+
