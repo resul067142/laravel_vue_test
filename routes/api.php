@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FileController; // FileController'ı dahil ettik
 
 use App\Http\Controllers\PuanlafotoController;
+use App\Http\Controllers\FamilyMemberController;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
@@ -31,6 +32,14 @@ Route::post('/scores', [ScoreController::class, 'store']);
 Route::get('/files', [FileController::class, 'index']);
 Route::post('/files', [FileController::class, 'store']);
 Route::get('/files/{id}/download', [FileController::class, 'download']);
+
+
+
+Route::get('/family', [FamilyMemberController::class, 'index']);
+Route::post('/family', [FamilyMemberController::class, 'store']);
+Route::post('/family/{id}', [FamilyMemberController::class, 'update']);
+Route::delete('/family/{id}', [FamilyMemberController::class, 'destroy']);
+
 
 Route::get('/api/puanlafoto', [PuanlafotoController::class, 'index']);
 Route::post('/api/puanlafoto', [PuanlafotoController::class, 'store']);
