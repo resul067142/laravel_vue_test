@@ -28,10 +28,11 @@ import giris from "./pages/profil/giris.vue";
 import video from "./pages/egitim/video.vue";
 import belge from "./pages/egitim/belge.vue";
 import harita from "./pages/harita/index.vue";
-import antireman from "./pages/egitim/Antireman.vue";
+import antireman from "./pages/egitim/antreman.vue";
 import dosya from "./pages/egitim/dosya.vue";
 import puanlama from "./pages/puanlama/puanlama.vue";
 import soytakip from "./pages/egitim/soytakip.vue";
+import sesmetin from "./pages/egitim/sesmetin.vue";
 
 const routes = [
     { path: '/', component: Home },
@@ -50,11 +51,12 @@ const routes = [
     { path: '/video', component: video },
     { path: '/belge', component: belge },
     { path: '/harita', component: harita },
-    { path: '/Antireman', component: antireman },
+    { path: '/antreman', component: antireman },
     { path: '/dosya', component: dosya },
     { path: '/puanlama', component: puanlama },
     { path: '/soytakip', component: soytakip },
-    { path: '/profile/edit', component: ProfilDüzenle }
+    { path: '/profile/edit', component: ProfilDüzenle },
+    { path: '/sesmetin', component: sesmetin }
 ];
 
 const router = createRouter({

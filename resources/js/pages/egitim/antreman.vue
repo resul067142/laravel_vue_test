@@ -102,7 +102,7 @@ export default {
             previousOptions: null,
             currentQuestion: null,
             score: 0,
-            timer: 4,
+            timer: 10,
             gameOver: false,
             hints: 3,
             hintUsed: false,
@@ -226,7 +226,7 @@ export default {
             }
             clearInterval(this.timerInterval);
             this.score = 0;
-            this.timer = 4;
+            this.timer = 10;
             this.gameOver = false;
             this.hints = 3;
             this.hintUsed = false;

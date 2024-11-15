@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('family_members', function (Blueprint $table) {
             $table->id();
+            $table->string('name');            // İsim
+            $table->integer('age');            // Yaş
+            $table->string('relation');        // İlişki
+            $table->string('photo_path')->nullable(); // Fotoğraf Yolu (isteğe bağlı)
             $table->timestamps();
         });
     }
