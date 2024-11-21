@@ -33,6 +33,7 @@ import dosya from "./pages/egitim/dosya.vue";
 import puanlama from "./pages/puanlama/puanlama.vue";
 import soytakip from "./pages/egitim/soytakip.vue";
 import sesmetin from "./pages/egitim/sesmetin.vue";
+import aile from "./pages/egitim/ailemm.vue";
 
 const routes = [
     { path: '/', component: Home },
@@ -56,7 +57,8 @@ const routes = [
     { path: '/puanlama', component: puanlama },
     { path: '/soytakip', component: soytakip },
     { path: '/profile/edit', component: ProfilDüzenle },
-    { path: '/sesmetin', component: sesmetin }
+    { path: '/sesmetin', component: sesmetin },
+    { path: '/aile', component: aile }
 ];
 
 const router = createRouter({

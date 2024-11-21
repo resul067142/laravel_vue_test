@@ -13,10 +13,8 @@ class PuanlafotoController extends Controller
             'dosya' => 'required|file|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        // Dosyayı kaydet
         $dosyaYolu = $request->file('dosya')->store('public/fotograflar');
 
-        // Yeni fotoğraf kaydı oluştur
         Puanlafoto::create([
             'ad' => $request->ad,
             'dosya_yolu' => $dosyaYolu,

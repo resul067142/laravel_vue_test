@@ -1,78 +1,70 @@
 <?php
 
-
-
-
-use App\Http\Controllers\Api\SorularController;
-use App\Http\Controllers\Api\ScoreController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\FileController; // FileController'ı dahil ettik
-
 use App\Http\Controllers\PuanlafotoController;
+use App\Http\Controllers\Api\SorularController;
+use App\Http\Controllers\Api\ScoreController;
+use App\Http\Controllers\FileController;
 use App\Http\Controllers\FamilyMemberController;
+use App\Http\Controllers\AudioController;
+use App\Http\Controllers\TranscriptionController;
 
+// Kullanıcı bilgilerini getirme
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-// AuthController üzerinden login işlemi
+// Auth işlemleri
 Route::post('/login', [\App\Http\Controllers\Api\AuthController::class, 'login']);
 
 // Sorular CRUD işlemleri
-Route::get('/sorular', [SorularController::class, 'index']);
-Route::get('/sorular/{id}', [SorularController::class, 'show'])->middleware('auth:sanctum');
-Route::post('/sorular', [SorularController::class, 'store'])->middleware('auth:sanctum');
-Route::put('/sorular/{id}', [SorularController::class, 'update'])->middleware('auth:sanctum');
-Route::delete('/sorular/{id}', [SorularController::class, 'destroy'])->middleware('auth:sanctum');
-
-// Score işlemleri
-Route::get('/scores', [ScoreController::class, 'index']);
-Route::get('/scores/{range}', [ScoreController::class, 'indexByRange']); // Puan aralığı rotası
-Route::post('/scores', [ScoreController::class, 'store']);
-
-// Dosya işlemleri
-Route::get('/files', [FileController::class, 'index']);
-Route::post('/files', [FileController::class, 'store']);
-Route::get('/files/{id}/download', [FileController::class, 'download']);
-
-use App\Http\Controllers\TranscribeController;
-
-Route::post('/api/transcribe', [TranscribeController::class, 'transcribe']);
-
-use App\Http\Controllers\TranscriptionController;
-
-Route::post('/transcribe', [TranscriptionController::class, 'transcribe']);
-
-use App\Http\Controllers\AudioController;
-
-Route::post('/transcribe', [AudioController::class, 'transcribe']);
-
-
-Route::get('/family', [FamilyMemberController::class, 'index']);
-Route::post('/family', [FamilyMemberController::class, 'store']);
-Route::post('/family/{id}', [FamilyMemberController::class, 'update']);
-Route::delete('/family/{id}', [FamilyMemberController::class, 'destroy']);
-
-Route::any('/upload', [AudioController::class, 'upload']);
-
-
-Route::post('/upload', [AudioController::class, 'upload']);
-
-
-Route::post('/upload-audio', [AudioController::class, 'upload']);
-
-
-Route::get('/api/puanlafoto', [PuanlafotoController::class, 'index']);
-Route::post('/api/puanlafoto', [PuanlafotoController::class, 'store']);
-Route::post('/api/puanlafoto/yukle', [PuanlafotoController::class, 'yukle']);
-Route::post('/test', function() {
-    return response()->json(['message' => 'Test başarılı'], 200);
-
-    Route::get('/family-members', [FamilyMemberController::class, 'index']);
-    Route::post('/family-members', [FamilyMemberController::class, 'store']);
-    Route::put('/family-members/{id}', [FamilyMemberController::class, 'update']); // Eksik olan update rotası
-    Route::delete('/family-members/{id}', [FamilyMemberController::class, 'destroy']);
-
+Route::prefix('sorular')->middleware('auth:sanctum')->group(function () {
+    Route::get('/', [SorularController::class, 'index']);
+    Route::get('/{id}', [SorularController::class, 'show']);
+    Route::post('/', [SorularController::class, 'store']);
+    Route::put('/{id}', [SorularController::class, 'update']);
+    Route::delete('/{id}', [SorularController::class, 'destroy']);
 });
 
+// Score işlemleri
+Route::prefix('scores')->group(function () {
+    Route::get('/', [ScoreController::class, 'index']);
+    Route::get('/{range}', [ScoreController::class, 'indexByRange']); // Puan aralığı
+    Route::post('/', [ScoreController::class, 'store']);
+});
+
+// Dosya işlemleri
+Route::prefix('files')->group(function () {
+    Route::get('/', [FileController::class, 'index']);
+    Route::post('/', [FileController::class, 'store']);
+    Route::get('/{id}/download', [FileController::class, 'download']);
+});
+
+Route::apiResource('members', App\Http\Controllers\API\MemberController::class);
+
+// Transcribe işlemleri
+Route::prefix('transcribe')->group(function () {
+    Route::post('/', [TranscriptionController::class, 'transcribe']);
+    Route::post('/upload', [AudioController::class, 'upload']);
+});
+
+// Family Member işlemleri
+Route::prefix('family')->group(function () {
+    Route::get('/', [FamilyMemberController::class, 'index']);
+    Route::post('/', [FamilyMemberController::class, 'store']);
+    Route::put('/{id}', [FamilyMemberController::class, 'update']);
+    Route::delete('/{id}', [FamilyMemberController::class, 'destroy']);
+});
+
+// Puanlafoto işlemleri
+Route::prefix('puanlafoto')->group(function () {
+    Route::post('/yukle', [PuanlafotoController::class, 'yukle']);
+    Route::get('/', [PuanlafotoController::class, 'index']);
+    Route::post('/', [PuanlafotoController::class, 'store']);
+});
+
+// Test rotası
+Route::post('/test', function () {
+    return response()->json(['message' => 'Test başarılı'], 200);
+});

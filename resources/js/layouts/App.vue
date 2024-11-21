@@ -24,6 +24,7 @@
             <router-link to="/soytakip" class="hamburger-menu-item" @click="handleNavClick">Soy Takip</router-link>
             <router-link to="/sesmetin" class="hamburger-menu-item" @click="handleNavClick">Ses Metin</router-link>
             <router-link to="/harita" class="hamburger-menu-item" @click="handleNavClick">Harita</router-link>
+            <router-link to="/aile" class="hamburger-menu-item" @click="handleNavClick">aile</router-link>
         </div>
 
         <!-- Main Content -->

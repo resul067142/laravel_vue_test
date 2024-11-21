@@ -33,7 +33,7 @@
         <!-- Fotoğraf Slider -->
         <div class="w-full max-w-md bg-white rounded-lg shadow-md overflow-hidden mt-8">
             <div class="relative">
-                <img :src="guncelFotograf.dosya_yolu" alt="Fotoğraf" class="w-full h-64 object-cover" />
+                <img :src="guncelFotograf.dosya_yolu || 'https://via.placeholder.com/150'" alt="Fotoğraf" class="w-full h-64 object-cover" />
                 <button @click="oncekiFotograf" class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2">
                     ←
                 </button>
@@ -43,7 +43,6 @@
             </div>
             <div class="p-4">
                 <h3 class="text-xl font-semibold text-center mb-4">{{ guncelFotograf.ad }}</h3>
-                <!-- Puanlama Bölümü -->
                 <div class="space-y-4">
                     <div v-for="(kategori, index) in kategoriler" :key="index" class="flex items-center justify-between">
                         <label :for="kategori" class="text-gray-700">{{ kategori }}</label>
@@ -60,7 +59,6 @@
                         Puan Ver
                     </button>
                 </div>
-                <!-- Ortalama Puan -->
                 <div class="mt-4 text-center">
                     <h4 class="text-lg font-bold">Ortalama Puan: {{ ortalamaPuan }}</h4>
                 </div>
@@ -141,13 +139,22 @@ export default {
                 yetenek: this.puanlar.Yetenek,
                 kisisel: this.puanlar.Kişisel,
             };
-            await axios.post('/api/puanlafoto', veri);
-            this.fotograflariGetir();
-            this.puanlariSifirla();
+
+            try {
+                await axios.post('/api/puanlafoto', veri);
+                this.fotograflariGetir();
+                this.puanlariSifirla();
+            } catch (error) {
+                console.error('Puanlama sırasında hata oluştu:', error);
+            }
         },
         async fotograflariGetir() {
-            const yanit = await axios.get('/api/puanlafoto');
-            this.fotograflar = yanit.data;
+            try {
+                const yanit = await axios.get('/api/puanlafoto');
+                this.fotograflar = yanit.data;
+            } catch (error) {
+                console.error('Fotoğraflar getirilirken hata oluştu:', error);
+            }
         },
         puanlariSifirla() {
             this.puanlar = { Güzellik: 0, Yetenek: 0, Kişisel: 0 };
@@ -160,14 +167,18 @@ export default {
             formData.append('ad', this.yeniFotograf.ad);
             formData.append('dosya', this.yeniFotograf.dosya);
 
-            await axios.post('/api/puanlafoto/yukle', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
+            try {
+                await axios.post('/api/puanlafoto/yukle', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                });
 
-            this.yeniFotograf = { ad: '', dosya: null };
-            this.fotograflariGetir();
+                this.yeniFotograf = { ad: '', dosya: null };
+                this.fotograflariGetir();
+            } catch (error) {
+                console.error('Fotoğraf yüklenirken hata oluştu:', error);
+            }
         },
     },
     created() {
@@ -178,4 +189,22 @@ export default {
 
 <style>
 @import 'https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css';
+
+img {
+    object-fit: cover;
+}
+
+button:hover {
+    filter: brightness(90%);
+}
+
+@media (max-width: 768px) {
+    .min-h-screen {
+        padding: 1rem;
+    }
+
+    table {
+        font-size: 0.9rem;
+    }
+}
 </style>
