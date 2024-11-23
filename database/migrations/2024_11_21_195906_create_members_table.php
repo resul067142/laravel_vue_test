@@ -12,17 +12,15 @@ class CreateMembersTable extends Migration
             $table->id();
             $table->string('name');
             $table->string('role');
+            $table->string('image');
             $table->text('details')->nullable();
-            $table->date('birth_date')->nullable();
+            $table->string('birthDate')->nullable();
             $table->string('occupation')->nullable();
+            $table->json('hobbies')->nullable();
             $table->string('contact')->nullable();
-            $table->string('social_media')->nullable();
-            $table->string('image')->nullable();
-            $table->unsignedBigInteger('parent_id')->nullable();
+            $table->string('socialMedia')->nullable();
+            $table->string('generation');
             $table->timestamps();
-
-            // Ebeveyn ilişkisi için foreign key
-            $table->foreign('parent_id')->references('id')->on('members')->onDelete('set null');
         });
     }
 

@@ -1,9 +1,7 @@
-
 <template>
-
     <div class="family-tree" ref="familyTree">
         <!-- Üst Satır: Anne ve Baba -->
-        <div class="generation top-generation">
+        <div class="generation top-generation" style="display: flex; flex-wrap: wrap; justify-content: center;">
             <div class="scroll-container">
                 <div
                     class="member"
@@ -27,7 +25,7 @@
         <div class="relationship-line"></div>
 
         <!-- Orta Satır: Çocuklar -->
-        <div class="generation middle-generation">
+        <div class="generation middle-generation" style="display: flex; flex-wrap: wrap; justify-content: center;">
             <div class="scroll-container">
                 <div
                     class="member"
@@ -51,7 +49,7 @@
         <div class="relationship-line"></div>
 
         <!-- Alt Satır: Akrabalar -->
-        <div class="generation bottom-generation">
+        <div class="generation bottom-generation" style="display: none;">
             <div class="scroll-container">
                 <div
                     class="member"
@@ -83,7 +81,7 @@
         </div>
 
         <!-- Üye Ekleme Butonu -->
-        <div class="add-member-container">
+        <div class="add-member-container" style="position: fixed; top: 10px; left: 50%; transform: translateX(-50%); z-index: 1001;">
             <button @click="openAddMemberModal" class="add-member-button">
                 Yeni Üye Ekle
             </button>
@@ -103,6 +101,9 @@
                     <li>Hobiler: {{ selectedMember.hobbies.join(", ") }}</li>
                     <li>Sosyal Medya: <a :href="selectedMember.socialMedia" target="_blank">{{ selectedMember.socialMedia }}</a></li>
                     <li>İletişim: {{ selectedMember.contact }}</li>
+                    <li>Adres: {{ selectedMember.address }}</li>
+                    <li>Eğitim Durumu: {{ selectedMember.education }}</li>
+                    <li>Kan Grubu: {{ selectedMember.bloodType }}</li>
                 </ul>
                 <!-- Üye Düzenleme ve Silme -->
                 <button @click="openEditMemberModal(selectedMember)" class="edit-button">
@@ -128,6 +129,9 @@
                     <input v-model="memberForm.contact" placeholder="İletişim" />
                     <input v-model="memberForm.socialMedia" placeholder="Sosyal Medya Profili" />
                     <input v-model="memberForm.hobbies" placeholder="Hobiler (Virgülle ayırın)" />
+                    <input v-model="memberForm.address" placeholder="Adres" />
+                    <input v-model="memberForm.education" placeholder="Eğitim Durumu" />
+                    <input v-model="memberForm.bloodType" placeholder="Kan Grubu" />
                     <textarea v-model="memberForm.details" placeholder="Detaylar"></textarea>
                     <select v-model="memberForm.generation" required>
                         <option value="parents">Üst Nesil (Anne/Baba)</option>
@@ -164,6 +168,9 @@ export default {
                 hobbies: "",
                 contact: "",
                 socialMedia: "",
+                address: "",
+                education: "",
+                bloodType: "",
                 generation: "children",
             },
             searchQuery: "",
@@ -227,6 +234,9 @@ export default {
                 hobbies: "",
                 contact: "",
                 socialMedia: "",
+                address: "",
+                education: "",
+                bloodType: "",
                 generation: "children",
             };
         },
@@ -408,19 +418,18 @@ export default {
     flex: 0 0 auto;
     scroll-snap-align: start;
     background: #fff;
-    margin: 0 10px;
+    margin: 10px;
     padding: 15px;
     border-radius: 10px;
     text-align: center;
-    min-width: 120px;
-    max-width: 150px;
+    width: 45%;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .avatar {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
+    width: 100%;
+    height: auto;
+    border-radius: 0;
     object-fit: cover;
 }
 
@@ -474,7 +483,6 @@ export default {
 .modal-avatar {
     width: 120px;
     height: 120px;
-    border-radius: 50%;
     object-fit: cover;
     margin-bottom: 15px;
 }
@@ -570,45 +578,24 @@ export default {
 
 @media screen and (max-width: 768px) {
     .member {
-        min-width: 100px;
-        max-width: 120px;
+        width: 100%;
     }
     .avatar {
-        width: 80px;
-        height: 80px;
+        width: 100%;
+        height: auto;
     }
 }
 
 @media screen and (max-width: 480px) {
     .member {
-        min-width: 80px;
-        max-width: 100px;
+        width: 100%;
     }
     .avatar {
-        width: 70px;
-        height: 70px;
+        width: 100%;
+        height: auto;
     }
     .modal-content {
         padding: 15px;
-    }
-    .modal-avatar {
-        width: 100px;
-        height: 100px;
-    }
-}
-
-@media screen and (max-width: 360px) {
-    .member {
-        min-width: 70px;
-        max-width: 90px;
-    }
-    .avatar {
-        width: 60px;
-        height: 60px;
-    }
-    .modal-avatar {
-        width: 80px;
-        height: 80px;
     }
 }
 </style>

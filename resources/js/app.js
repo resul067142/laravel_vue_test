@@ -11,6 +11,12 @@ import Vue3TouchEvents from 'vue3-touch-events';
 import { createI18n } from 'vue-i18n';
 import messages from './i18n/messages.js';
 
+// main.js veya app.js
+import axios from 'axios';
+
+axios.defaults.baseURL = 'http://localhost:8000'; // Laravel projenizin URL'si
+
+
 import Home from './pages/Home.vue';
 import ProductIndex from './pages/sorular/Index.vue';
 import ProductCreate from './pages/sorular/Create.vue';

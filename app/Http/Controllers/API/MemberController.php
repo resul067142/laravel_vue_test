@@ -1,93 +1,83 @@
 <?php
 
-namespace App\Http\Controllers\API;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Member;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class MemberController extends Controller
 {
+    // Üyelerin listesini döndürür
     public function index()
     {
-        $members = Member::with('children')->get();
+        $members = Member::all();
         return response()->json($members);
     }
 
+    // Yeni bir üye oluşturur
     public function store(Request $request)
     {
-        $request->validate([
+        $validatedData = $request->validate([
             'name' => 'required|string',
             'role' => 'required|string',
-            'image' => 'nullable|image|max:2048', // Maksimum 2MB
+            'image' => 'required|string',
+            'details' => 'nullable|string',
+            'birthDate' => 'nullable|string',
+            'occupation' => 'nullable|string',
+            'hobbies' => 'nullable|array',
+            'contact' => 'nullable|string',
+            'socialMedia' => 'nullable|string',
+            'generation' => 'required|string',
         ]);
 
-        $data = $request->all();
-
-        // Resim yükleme
-        if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('images', 'public');
-        }
-
-        // Hobileri JSON formatına çevir
-        if (isset($data['hobbies'])) {
-            $data['hobbies'] = json_decode($data['hobbies'], true);
-        }
-
-        $member = Member::create($data);
-
+        $member = Member::create($validatedData);
         return response()->json($member, 201);
     }
 
+    // Belirli bir üyeyi döndürür
     public function show($id)
     {
-        $member = Member::with('children')->findOrFail($id);
+        $member = Member::find($id);
+        if (!$member) {
+            return response()->json(['message' => 'Üye bulunamadı'], 404);
+        }
         return response()->json($member);
     }
 
+    // Bir üyeyi günceller
     public function update(Request $request, $id)
     {
-        $member = Member::findOrFail($id);
+        $member = Member::find($id);
+        if (!$member) {
+            return response()->json(['message' => 'Üye bulunamadı'], 404);
+        }
 
-        $request->validate([
-            'name' => 'required|string',
-            'role' => 'required|string',
-            'image' => 'nullable|image|max:2048',
+        $validatedData = $request->validate([
+            'name' => 'sometimes|required|string',
+            'role' => 'sometimes|required|string',
+            'image' => 'sometimes|required|string',
+            'details' => 'nullable|string',
+            'birthDate' => 'nullable|string',
+            'occupation' => 'nullable|string',
+            'hobbies' => 'nullable|array',
+            'contact' => 'nullable|string',
+            'socialMedia' => 'nullable|string',
+            'generation' => 'sometimes|required|string',
         ]);
 
-        $data = $request->all();
-
-        // Resim yükleme
-        if ($request->hasFile('image')) {
-            // Eski resmi sil
-            if ($member->image) {
-                Storage::disk('public')->delete($member->image);
-            }
-            $data['image'] = $request->file('image')->store('images', 'public');
-        }
-
-        // Hobileri JSON formatına çevir
-        if (isset($data['hobbies'])) {
-            $data['hobbies'] = json_decode($data['hobbies'], true);
-        }
-
-        $member->update($data);
-
+        $member->update($validatedData);
         return response()->json($member);
     }
 
+    // Bir üyeyi siler
     public function destroy($id)
     {
-        $member = Member::findOrFail($id);
-
-        // Resmi sil
-        if ($member->image) {
-            Storage::disk('public')->delete($member->image);
+        $member = Member::find($id);
+        if (!$member) {
+            return response()->json(['message' => 'Üye bulunamadı'], 404);
         }
-
         $member->delete();
-
-        return response()->json(null, 204);
+        return response()->json(['message' => 'Üye silindi']);
     }
 }

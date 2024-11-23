@@ -1,106 +1,78 @@
 <template>
     <div class="family-tree" ref="familyTree">
-        <!-- Üst Satır: Anne ve Baba -->
-        <div class="generation top-generation">
-            <div class="scroll-container">
-                <div
-                    class="member"
-                    v-for="(parent, index) in filteredParents"
-                    :key="index"
-                >
-                    <img class="avatar" :src="parent.image" :alt="parent.name" />
-                    <p class="name">{{ parent.name }}</p>
-                    <p class="role">{{ parent.role }}</p>
-                    <button
-                        @click="showDetails(parent)"
-                        class="details-button"
-                    >
-                        Detayları Göster
-                    </button>
-                </div>
+        <!-- Arama ve Butonlar -->
+        <div class="top-controls">
+            <div class="search-input-group">
+                <input
+                    type="text"
+                    v-model="searchQuery"
+                    placeholder="Üye Ara..."
+                    class="search-input"
+                />
+                <button @click="resetSearch" class="reset-search-button">Sıfırla</button>
             </div>
-        </div>
-
-        <!-- İlişki Çizgisi -->
-        <div class="relationship-line"></div>
-
-        <!-- Orta Satır: Çocuklar -->
-        <div class="generation middle-generation">
-            <div class="scroll-container">
-                <div
-                    class="member"
-                    v-for="(child, index) in filteredChildren"
-                    :key="index"
-                >
-                    <img class="avatar" :src="child.image" :alt="child.name" />
-                    <p class="name">{{ child.name }}</p>
-                    <p class="role">{{ child.role }}</p>
-                    <button
-                        @click="showDetails(child)"
-                        class="details-button"
-                    >
-                        Detayları Göster
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- İlişki Çizgisi -->
-        <div class="relationship-line"></div>
-
-        <!-- Alt Satır: Amca ve Teyze -->
-        <div class="generation bottom-generation">
-            <div class="scroll-container">
-                <div
-                    class="member"
-                    v-for="(relative, index) in filteredRelatives"
-                    :key="index"
-                >
-                    <img class="avatar" :src="relative.image" :alt="relative.name" />
-                    <p class="name">{{ relative.name }}</p>
-                    <p class="role">{{ relative.role }}</p>
-                    <button
-                        @click="showDetails(relative)"
-                        class="details-button"
-                    >
-                        Detayları Göster
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Arama Kutusu -->
-        <div class="search-container">
-            <button @click="resetSearch" class="reset-search-button">Aramayı Sıfırla</button>
-            <input
-                type="text"
-                v-model="searchQuery"
-                placeholder="Üye Ara..."
-                class="search-input"
-            />
-        </div>
-
-        <!-- Üye Ekleme Butonu -->
-        <div class="add-member-container">
             <button @click="openAddMemberModal" class="add-member-button">
                 Yeni Üye Ekle
             </button>
         </div>
 
+        <!-- Üst Satır: Anne ve Baba -->
+        <div class="generation top-generation" v-if="filteredParents.length">
+            <h3>Üst Nesil (Anne/Baba)</h3>
+            <div class="scroll-container">
+                <div
+                    class="member"
+                    v-for="parent in filteredParents"
+                    :key="parent.id"
+                    @click="showDetails(parent)"
+                >
+                    <img v-if="parent.image" class="avatar" :src="parent.image" :alt="parent.name" />
+                    <div v-else class="no-image-avatar">{{ getInitials(parent.name) }}</div>
+                    <p class="name">{{ parent.name }}</p>
+                    <p class="role">{{ parent.role }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- İlişki Çizgisi -->
+        <div class="relationship-line" v-if="filteredParents.length && filteredRelatives.length"></div>
+
+        <!-- Alt Satır: Akrabalar -->
+        <div class="generation bottom-generation" v-if="filteredRelatives.length">
+            <h3>Alt Nesil (Akrabalar)</h3>
+            <div class="scroll-container">
+                <div
+                    class="member"
+                    v-for="relative in filteredRelatives"
+                    :key="relative.id"
+                    @click="showDetails(relative)"
+                >
+                    <img v-if="relative.image" class="avatar" :src="relative.image" :alt="relative.name" />
+                    <div v-else class="no-image-avatar">{{ getInitials(relative.name) }}</div>
+                    <p class="name">{{ relative.name }}</p>
+                    <p class="role">{{ relative.role }}</p>
+                </div>
+            </div>
+        </div>
+
         <!-- Detaylar Modal -->
-        <div v-if="selectedMember" class="modal">
+        <div v-if="selectedMember" class="modal" @click.self="closeDetails">
             <div class="modal-content">
                 <span class="close" @click="closeDetails">&times;</span>
-                <img class="modal-avatar" :src="selectedMember.image" :alt="selectedMember.name" />
+                <img v-if="selectedMember.image" class="modal-avatar" :src="selectedMember.image" :alt="selectedMember.name" />
+                <div v-else class="no-image-avatar-modal">{{ getInitials(selectedMember.name) }}</div>
                 <h2>{{ selectedMember.name }} - {{ selectedMember.role }}</h2>
                 <p>{{ selectedMember.details }}</p>
                 <!-- Ek detaylı özellikler -->
                 <ul>
-                    <li>Doğum Tarihi: {{ selectedMember.birthDate }}</li>
-                    <li>Meslek: {{ selectedMember.occupation }}</li>
-                    <li>Hobiler: {{ selectedMember.hobbies.join(", ") }}</li>
-                    <li>Sosyal Medya: <a :href="selectedMember.socialMedia" target="_blank">{{ selectedMember.socialMedia }}</a></li>
-                    <li>İletişim: {{ selectedMember.contact }}</li>
+                    <li><strong>Doğum Tarihi:</strong> {{ selectedMember.birthDate }}</li>
+                    <li><strong>Meslek:</strong> {{ selectedMember.occupation }}</li>
+                    <li><strong>Hobiler:</strong> {{ selectedMember.hobbies.join(", ") }}</li>
+                    <li>
+                        <strong>Sosyal Medya:</strong>
+                        <a :href="selectedMember.socialMedia" target="_blank">{{ selectedMember.socialMedia }}</a>
+                    </li>
+                    <li><strong>İletişim:</strong> {{ selectedMember.contact }}</li>
                 </ul>
                 <!-- Üye Düzenleme ve Silme -->
                 <button @click="openEditMemberModal(selectedMember)" class="edit-button">
@@ -113,14 +85,14 @@
         </div>
 
         <!-- Üye Ekleme/Düzenleme Modal -->
-        <div v-if="showAddEditModal" class="modal">
+        <div v-if="showAddEditModal" class="modal" @click.self="closeAddEditModal">
             <div class="modal-content">
                 <span class="close" @click="closeAddEditModal">&times;</span>
                 <h2>{{ isEditing ? 'Üye Düzenle' : 'Yeni Üye Ekle' }}</h2>
-                <form @submit.prevent="saveMember">
+                <form @submit.prevent="saveMember" enctype="multipart/form-data">
                     <input v-model="memberForm.name" placeholder="İsim" required />
                     <input v-model="memberForm.role" placeholder="Rol" required />
-                    <input v-model="memberForm.image" placeholder="Resim URL" required />
+                    <input type="file" @change="onFileChange" accept="image/*" />
                     <input v-model="memberForm.birthDate" placeholder="Doğum Tarihi" />
                     <input v-model="memberForm.occupation" placeholder="Meslek" />
                     <input v-model="memberForm.contact" placeholder="İletişim" />
@@ -128,8 +100,8 @@
                     <input v-model="memberForm.hobbies" placeholder="Hobiler (Virgülle ayırın)" />
                     <textarea v-model="memberForm.details" placeholder="Detaylar"></textarea>
                     <select v-model="memberForm.generation" required>
+                        <option value="" disabled>-- Nesil Seçin --</option>
                         <option value="parents">Üst Nesil (Anne/Baba)</option>
-                        <option value="children">Orta Nesil (Çocuklar)</option>
                         <option value="relatives">Alt Nesil (Akrabalar)</option>
                     </select>
                     <button type="submit" class="save-button">
@@ -142,215 +114,30 @@
 </template>
 
 <script>
+import axios from 'axios';
+
+axios.defaults.baseURL = 'http://localhost:8000'; // Laravel projenizin URL'sini buraya yazın
+
 export default {
     data() {
         return {
-            parents: [
-                // Mevcut ebeveyn verileri
-                {
-                    name: "Mehmet",
-                    role: "Baba",
-                    image: "https://via.placeholder.com/150",
-                    details: "Ailenin babası ve başarılı bir mühendistir.",
-                    birthDate: "01.01.1970",
-                    occupation: "Mühendis",
-                    hobbies: ["Balık Tutma", "Satranç"],
-                    contact: "mehmet@example.com",
-                    socialMedia: "https://twitter.com/mehmet",
-                    generation: "parents",
-                },
-                {
-                    name: "Mehmet",
-                    role: "Baba",
-                    image: "https://via.placeholder.com/150",
-                    details: "Ailenin babası ve başarılı bir mühendistir.",
-                    birthDate: "01.01.1970",
-                    occupation: "Mühendis",
-                    hobbies: ["Balık Tutma", "Satranç"],
-                    contact: "mehmet@example.com",
-                    socialMedia: "https://twitter.com/mehmet",
-                    generation: "parents",
-                },
-                {
-                    name: "Mehmet",
-                    role: "Baba",
-                    image: "https://via.placeholder.com/150",
-                    details: "Ailenin babası ve başarılı bir mühendistir.",
-                    birthDate: "01.01.1970",
-                    occupation: "Mühendis",
-                    hobbies: ["Balık Tutma", "Satranç"],
-                    contact: "mehmet@example.com",
-                    socialMedia: "https://twitter.com/mehmet",
-                    generation: "parents",
-                },
-                {
-                    name: "Mehmet",
-                    role: "Baba",
-                    image: "https://via.placeholder.com/150",
-                    details: "Ailenin babası ve başarılı bir mühendistir.",
-                    birthDate: "01.01.1970",
-                    occupation: "Mühendis",
-                    hobbies: ["Balık Tutma", "Satranç"],
-                    contact: "mehmet@example.com",
-                    socialMedia: "https://twitter.com/mehmet",
-                    generation: "parents",
-                },
-                {
-                    name: "Elif",
-                    role: "Anne",
-                    image: "https://via.placeholder.com/150",
-                    details: "Ailenin annesi ve yetenekli bir öğretmendir.",
-                    birthDate: "05.05.1972",
-                    occupation: "Öğretmen",
-                    hobbies: ["Okuma", "Yoga"],
-                    contact: "elif@example.com",
-                    socialMedia: "https://facebook.com/elif",
-                    generation: "parents",
-                },
-                // Yeni eklenen fake veriler
-                {
-                    name: "Hakan",
-                    role: "Baba",
-                    image: "https://via.placeholder.com/150",
-                    details: "Ailenin babası ve sporcu bir kişiliğe sahiptir.",
-                    birthDate: "15.08.1973",
-                    occupation: "Sporcu",
-                    hobbies: ["Koşu", "Futbol"],
-                    contact: "hakan@example.com",
-                    socialMedia: "https://twitter.com/hakan",
-                    generation: "parents",
-                },
-                {
-                    name: "Zeynep",
-                    role: "Anne",
-                    image: "https://via.placeholder.com/150",
-                    details: "Ailenin annesi ve çok başarılı bir yazardır.",
-                    birthDate: "22.09.1974",
-                    occupation: "Yazar",
-                    hobbies: ["Yazı Yazma", "Doğa Gezileri"],
-                    contact: "zeynep@example.com",
-                    socialMedia: "https://facebook.com/zeynep",
-                    generation: "parents",
-                },
-            ],
-            children: [
-                // Mevcut çocuk verileri
-                {
-                    name: "Ahmet",
-                    role: "Oğul",
-                    image: "https://via.placeholder.com/150",
-                    details: "Üniversite öğrencisi ve basketbol oyuncusu.",
-                    birthDate: "10.10.1995",
-                    occupation: "Öğrenci",
-                    hobbies: ["Basketbol", "Bilgisayar Oyunları"],
-                    contact: "ahmet@example.com",
-                    socialMedia: "https://instagram.com/ahmet",
-                    generation: "children",
-                },
-                {
-                    name: "Ayşe",
-                    role: "Kız",
-                    image: "https://via.placeholder.com/150",
-                    details: "Lise öğrencisi ve sanata meraklı.",
-                    birthDate: "12.12.1998",
-                    occupation: "Öğrenci",
-                    hobbies: ["Resim", "Piyano"],
-                    contact: "ayse@example.com",
-                    socialMedia: "https://instagram.com/ayse",
-                    generation: "children",
-                },
-                // Yeni eklenen fake veriler
-                {
-                    name: "Efe",
-                    role: "Oğul",
-                    image: "https://via.placeholder.com/150",
-                    details: "Ortaokul öğrencisi ve yüzme takımında yer alıyor.",
-                    birthDate: "20.04.2005",
-                    occupation: "Öğrenci",
-                    hobbies: ["Yüzme", "Satranç"],
-                    contact: "efe@example.com",
-                    socialMedia: "https://instagram.com/efe",
-                    generation: "children",
-                },
-                {
-                    name: "Melis",
-                    role: "Kız",
-                    image: "https://via.placeholder.com/150",
-                    details: "Lise öğrencisi ve tiyatro kulübüne üye.",
-                    birthDate: "15.06.2003",
-                    occupation: "Öğrenci",
-                    hobbies: ["Tiyatro", "Kitap Okuma"],
-                    contact: "melis@example.com",
-                    socialMedia: "https://instagram.com/melis",
-                    generation: "children",
-                },
-            ],
-            relatives: [
-                // Mevcut akraba verileri
-                {
-                    name: "Mustafa",
-                    role: "Amca",
-                    image: "https://via.placeholder.com/150",
-                    details: "Doktor ve fotoğrafçılığa ilgi duyar.",
-                    birthDate: "15.03.1975",
-                    occupation: "Doktor",
-                    hobbies: ["Koşu", "Fotoğrafçılık"],
-                    contact: "mustafa@example.com",
-                    socialMedia: "https://linkedin.com/in/mustafa",
-                    generation: "relatives",
-                },
-                {
-                    name: "Fatma",
-                    role: "Teyze",
-                    image: "https://via.placeholder.com/150",
-                    details: "Avukat ve seyahat etmeyi sever.",
-                    birthDate: "20.07.1978",
-                    occupation: "Avukat",
-                    hobbies: ["Seyahat", "Yemek Yapma"],
-                    contact: "fatma@example.com",
-                    socialMedia: "https://twitter.com/fatma",
-                    generation: "relatives",
-                },
-                // Yeni eklenen fake veriler
-                {
-                    name: "Kemal",
-                    role: "Dayı",
-                    image: "https://via.placeholder.com/150",
-                    details: "Müzisyen ve gitar çalmayı sever.",
-                    birthDate: "12.11.1976",
-                    occupation: "Müzisyen",
-                    hobbies: ["Gitar Çalma", "Kamp Yapma"],
-                    contact: "kemal@example.com",
-                    socialMedia: "https://linkedin.com/in/kemal",
-                    generation: "relatives",
-                },
-                {
-                    name: "Sibel",
-                    role: "Hala",
-                    image: "https://via.placeholder.com/150",
-                    details: "Hemşire ve doğa yürüyüşlerine meraklıdır.",
-                    birthDate: "09.01.1980",
-                    occupation: "Hemşire",
-                    hobbies: ["Doğa Yürüyüşü", "Bahçe İşleri"],
-                    contact: "sibel@example.com",
-                    socialMedia: "https://twitter.com/sibel",
-                    generation: "relatives",
-                },
-            ],
+            parents: [],
+            relatives: [],
             selectedMember: null,
             showAddEditModal: false,
             isEditing: false,
             memberForm: {
+                id: null,
                 name: "",
                 role: "",
-                image: "",
+                photo: null, // Fotoğraf dosyasını tutacak
                 details: "",
                 birthDate: "",
                 occupation: "",
                 hobbies: "",
                 contact: "",
                 socialMedia: "",
-                generation: "children",
+                generation: "parents",
             },
             searchQuery: "",
         };
@@ -361,18 +148,10 @@ export default {
                 member.name.toLowerCase().includes(this.searchQuery.toLowerCase())
             );
         },
-        filteredChildren() {
-            return this.children.filter((member) =>
-                member.name.toLowerCase().includes(this.searchQuery.toLowerCase())
-            );
-        },
         filteredRelatives() {
             return this.relatives.filter((member) =>
                 member.name.toLowerCase().includes(this.searchQuery.toLowerCase())
             );
-        },
-        allMembers() {
-            return [...this.parents, ...this.children, ...this.relatives];
         },
     },
     methods: {
@@ -397,89 +176,138 @@ export default {
             this.showAddEditModal = true;
             this.isEditing = false;
             this.memberForm = {
+                id: null,
                 name: "",
                 role: "",
-                image: "",
+                photo: null,
                 details: "",
                 birthDate: "",
                 occupation: "",
                 hobbies: "",
                 contact: "",
                 socialMedia: "",
-                generation: "children",
+                generation: "parents",
             };
         },
         openEditMemberModal(member) {
             this.showAddEditModal = true;
             this.isEditing = true;
-            this.memberForm = { ...member };
+            this.memberForm = { ...member, photo: null };
             // Hobileri stringe çevir
             this.memberForm.hobbies = this.memberForm.hobbies.join(", ");
         },
         closeAddEditModal() {
             this.showAddEditModal = false;
         },
+        onFileChange(event) {
+            this.memberForm.photo = event.target.files[0];
+        },
         saveMember() {
             if (!this.memberForm.name.trim()) {
                 alert("İsim alanı boş bırakılamaz.");
                 return;
             }
-            // Hobileri diziye çevir
-            if (this.memberForm.hobbies) {
-                this.memberForm.hobbies = this.memberForm.hobbies
-                    .split(",")
-                    .map((hobby) => hobby.trim());
-            } else {
-                this.memberForm.hobbies = [];
+            if (!this.memberForm.role.trim()) {
+                alert("Rol alanı boş bırakılamaz.");
+                return;
             }
+            // Hobileri diziye çevir
+            const memberData = { ...this.memberForm };
+            memberData.hobbies = memberData.hobbies
+                ? memberData.hobbies.split(',').map(hobby => hobby.trim())
+                : [];
+
             // Sosyal medya URL'sini kontrol et
             if (
-                this.memberForm.socialMedia &&
-                !this.memberForm.socialMedia.startsWith("http")
+                memberData.socialMedia &&
+                !/^https?:\/\//i.test(memberData.socialMedia)
             ) {
-                this.memberForm.socialMedia = "https://" + this.memberForm.socialMedia;
+                memberData.socialMedia = "https://" + memberData.socialMedia;
             }
+
+            // FormData oluştur
+            const formData = new FormData();
+            formData.append('name', memberData.name);
+            formData.append('role', memberData.role);
+            formData.append('details', memberData.details);
+            formData.append('birthDate', memberData.birthDate);
+            formData.append('occupation', memberData.occupation);
+            formData.append('contact', memberData.contact);
+            formData.append('socialMedia', memberData.socialMedia);
+            formData.append('generation', memberData.generation);
+            formData.append('hobbies', JSON.stringify(memberData.hobbies));
+            if (memberData.photo) {
+                formData.append('photo', memberData.photo);
+            }
+
             if (this.isEditing) {
-                this.updateMember(this.memberForm);
+                // Üye güncelleme API çağrısı
+                axios.post(`/api/members/${memberData.id}`, formData)
+                    .then(() => {
+                        this.fetchMembers(); // Üye listesini yeniden yükle
+                        this.closeAddEditModal();
+                    })
+                    .catch(error => {
+                        console.error('Üye güncellenirken hata oluştu:', error.response?.data || error);
+                        alert('Üye güncellenemedi. Lütfen tekrar deneyin.');
+                    });
             } else {
-                this.addMember(this.memberForm);
-            }
-            this.closeAddEditModal();
-        },
-        addMember(member) {
-            const generation = member.generation;
-            this[generation].push({ ...member });
-        },
-        updateMember(updatedMember) {
-            const generation = updatedMember.generation;
-            const index = this[generation].findIndex(
-                (member) => member.name === updatedMember.name
-            );
-            if (index !== -1) {
-                this.$set(this[generation], index, { ...updatedMember });
+                // Yeni üye ekleme API çağrısı
+                axios.post('/api/members', formData)
+                    .then(() => {
+                        this.fetchMembers(); // Üye listesini yeniden yükle
+                        this.closeAddEditModal();
+                    })
+                    .catch(error => {
+                        console.error('Üye eklenirken hata oluştu:', error.response?.data || error);
+                        alert('Üye eklenemedi. Lütfen tekrar deneyin.');
+                    });
             }
         },
         deleteMember(member) {
             if (!confirm("Bu üyeyi silmek istediğinize emin misiniz?")) {
                 return;
             }
-            const generation = member.generation;
-            const index = this[generation].indexOf(member);
-            if (index !== -1) {
-                this[generation].splice(index, 1);
-                this.closeDetails();
-            }
+            axios.delete(`/api/members/${member.id}`)
+                .then(() => {
+                    this.fetchMembers(); // Üye listesini yeniden yükle
+                    this.closeDetails();
+                })
+                .catch(error => {
+                    console.error('Üye silinirken hata oluştu:', error.response?.data || error);
+                    alert('Üye silinemedi. Lütfen tekrar deneyin.');
+                });
+        },
+        fetchMembers() {
+            axios.get('/api/members')
+                .then(response => {
+                    const members = response.data;
+                    this.parents = members.filter(member => member.generation === 'parents');
+                    this.relatives = members.filter(member => member.generation === 'relatives');
+                })
+                .catch(error => {
+                    console.error('Veriler alınırken hata oluştu:', error.response?.data || error);
+                });
+        },
+        getInitials(name) {
+            return name
+                .split(' ')
+                .map((n) => n[0])
+                .join('')
+                .toUpperCase();
         },
     },
     mounted() {
+        this.fetchMembers();
         this.keyboardNavigationHandler = this.debounce((event) => {
             if (event.key === "Escape") {
                 this.closeDetails();
+                this.closeAddEditModal();
             }
         }, 200);
         document.addEventListener("keydown", this.keyboardNavigationHandler);
     },
-    beforeDestroy() {
+    beforeUnmount() {
         document.removeEventListener("keydown", this.keyboardNavigationHandler);
     },
 };
@@ -492,15 +320,65 @@ export default {
     align-items: center;
     overflow: hidden;
     max-width: 100%;
-    margin: auto;
-    padding: 10px;
+    margin: 0 auto;
+    padding: 0;
+}
+
+/* Üst Kontroller */
+.top-controls {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.search-input-group {
+    display: flex;
+    margin-bottom: 5px;
+}
+
+.search-input {
+    width: 200px;
+    padding: 8px;
+    border-radius: 5px 0 0 5px;
+    border: 1px solid #ccc;
+}
+
+.reset-search-button {
+    padding: 8px 12px;
+    background-color: #ffc107;
+    color: #fff;
+    border: none;
+    border-left: none;
+    border-radius: 0 5px 5px 0;
+    cursor: pointer;
+}
+
+.add-member-button {
+    padding: 8px 12px;
+    background-color: #17a2b8;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.add-member-button:hover {
+    background-color: #138496;
 }
 
 .generation {
     width: 100%;
     margin-bottom: 10px;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+}
+
+.generation h3 {
+    margin-bottom: 10px;
+    color: #333;
 }
 
 .scroll-container {
@@ -509,6 +387,7 @@ export default {
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     justify-content: center;
+    padding-bottom: 10px;
 }
 
 .member {
@@ -519,40 +398,66 @@ export default {
     padding: 15px;
     border-radius: 10px;
     text-align: center;
-    min-width: 120px;
-    max-width: 150px;
+    min-width: 100px;
+    max-width: 120px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+    cursor: pointer;
+}
+
+.member:hover {
+    transform: translateY(-5px);
 }
 
 .avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.no-image-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2em;
+    color: #fff;
+}
+
+.no-image-avatar-modal {
     width: 100px;
     height: 100px;
     border-radius: 50%;
-    object-fit: cover;
+    background-color: #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3em;
+    color: #fff;
+    margin-bottom: 15px;
 }
 
 .name {
     font-weight: bold;
     margin-top: 10px;
-    font-size: 1.1em;
+    font-size: 1em;
 }
 
 .role {
     color: #777;
     margin-bottom: 10px;
+    font-size: 0.9em;
 }
 
-.details-button {
-    padding: 8px 12px;
-    background-color: #0066cc;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.details-button:hover {
-    background-color: #004d99;
+.relationship-line {
+    width: 80%;
+    height: 2px;
+    background-color: #ccc;
+    margin: 10px 0;
 }
 
 .modal {
@@ -570,17 +475,19 @@ export default {
 
 .modal-content {
     background: #fff;
-    padding: 20px;
+    padding: 20px 30px;
     border-radius: 10px;
     width: 90%;
-    max-width: 400px;
+    max-width: 500px;
     position: relative;
     text-align: center;
+    max-height: 90vh;
+    overflow-y: auto;
 }
 
 .modal-avatar {
-    width: 120px;
-    height: 120px;
+    width: 100px;
+    height: 100px;
     border-radius: 50%;
     object-fit: cover;
     margin-bottom: 15px;
@@ -602,6 +509,7 @@ export default {
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    font-size: 0.9em;
 }
 
 .edit-button {
@@ -622,100 +530,116 @@ export default {
     background-color: #c82333;
 }
 
-.search-container {
-    width: 100%;
-    text-align: center;
-    margin-bottom: 10px;
+.save-button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 15px;
+    font-size: 1em;
 }
 
-.search-input {
-    width: 70%;
-    padding: 8px;
+.save-button:hover {
+    background-color: #0056b3;
+}
+
+.modal-content form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.modal-content form input,
+.modal-content form textarea,
+.modal-content form select {
+    width: 100%;
+    padding: 8px 10px;
+    margin: 5px 0;
     border-radius: 5px;
     border: 1px solid #ccc;
+    font-size: 1em;
 }
 
-.reset-search-button {
-    padding: 8px 12px;
-    margin-right: 5px;
-    background-color: #ffc107;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+.modal-content form textarea {
+    resize: vertical;
+    min-height: 60px;
 }
 
-.reset-search-button:hover {
-    background-color: #e0a800;
+.modal-content ul {
+    list-style-type: none;
+    padding: 0;
+    text-align: left;
 }
 
-.add-member-container {
-    width: 100%;
-    text-align: center;
-    margin-bottom: 10px;
+.modal-content li {
+    margin-bottom: 5px;
 }
 
-.add-member-button {
-    padding: 8px 15px;
-    background-color: #17a2b8;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+.modal-content a {
+    color: #0066cc;
+    text-decoration: none;
 }
 
-.add-member-button:hover {
-    background-color: #138496;
-}
-
-.relationship-line {
-    width: 100%;
-    height: 2px;
-    background-color: #ccc;
-    margin: 5px 0;
+.modal-content a:hover {
+    text-decoration: underline;
 }
 
 @media screen and (max-width: 768px) {
     .member {
-        min-width: 100px;
-        max-width: 120px;
+        min-width: 90px;
+        max-width: 100px;
     }
-    .avatar {
-        width: 80px;
-        height: 80px;
+    .avatar,
+    .no-image-avatar {
+        width: 70px;
+        height: 70px;
     }
 }
 
 @media screen and (max-width: 480px) {
     .member {
         min-width: 80px;
-        max-width: 100px;
+        max-width: 90px;
+        margin: 0 5px;
     }
-    .avatar {
-        width: 70px;
-        height: 70px;
+    .avatar,
+    .no-image-avatar {
+        width: 60px;
+        height: 60px;
     }
     .modal-content {
-        padding: 15px;
+        padding: 15px 20px;
     }
-    .modal-avatar {
-        width: 100px;
-        height: 100px;
+    .modal-avatar,
+    .no-image-avatar-modal {
+        width: 80px;
+        height: 80px;
+    }
+    .name, .role {
+        font-size: 0.9em;
     }
 }
 
 @media screen and (max-width: 360px) {
     .member {
         min-width: 70px;
-        max-width: 90px;
+        max-width: 80px;
+        margin: 0 3px;
     }
-    .avatar {
-        width: 60px;
-        height: 60px;
+    .avatar,
+    .no-image-avatar {
+        width: 50px;
+        height: 50px;
     }
-    .modal-avatar {
-        width: 80px;
-        height: 80px;
+    .modal-avatar,
+    .no-image-avatar-modal {
+        width: 70px;
+        height: 70px;
+    }
+    .name, .role {
+        font-size: 0.8em;
     }
 }
 </style>

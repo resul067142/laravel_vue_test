@@ -2,34 +2,27 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Member extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'name',
         'role',
-        'details',
-        'birth_date',
-        'occupation',
-        'contact',
-        'social_media',
         'image',
-        'parent_id',
+        'details',
+        'birthDate',
+        'occupation',
         'hobbies',
+        'contact',
+        'socialMedia',
+        'generation',
     ];
 
     protected $casts = [
         'hobbies' => 'array',
     ];
-
-    public function parent()
-    {
-        return $this->belongsTo(Member::class, 'parent_id');
-    }
-
-    public function children()
-    {
-        return $this->hasMany(Member::class, 'parent_id');
-    }
 }

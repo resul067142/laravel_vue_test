@@ -27,6 +27,11 @@ Route::prefix('sorular')->middleware('auth:sanctum')->group(function () {
     Route::delete('/{id}', [SorularController::class, 'destroy']);
 });
 
+use App\Http\Controllers\Api\MemberController;
+
+Route::apiResource('members', MemberController::class);
+
+
 // Score işlemleri
 Route::prefix('scores')->group(function () {
     Route::get('/', [ScoreController::class, 'index']);
