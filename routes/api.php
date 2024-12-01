@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\MediaController;
 use App\Http\Controllers\PuanlafotoController;
 use App\Http\Controllers\Api\SorularController;
 use App\Http\Controllers\Api\ScoreController;
@@ -9,14 +10,19 @@ use App\Http\Controllers\FileController;
 use App\Http\Controllers\FamilyMemberController;
 use App\Http\Controllers\AudioController;
 use App\Http\Controllers\TranscriptionController;
+use App\Http\Controllers\Api\MemberController;
+use App\Http\Controllers\Api\AuthController;
 
 // Kullanıcı bilgilerini getirme
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+// Media upload rotası
+Route::post('/upload', [MediaController::class, 'upload'])->middleware('check.media.upload');
+
 // Auth işlemleri
-Route::post('/login', [\App\Http\Controllers\Api\AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login']);
 
 // Sorular CRUD işlemleri
 Route::prefix('sorular')->middleware('auth:sanctum')->group(function () {
@@ -27,10 +33,8 @@ Route::prefix('sorular')->middleware('auth:sanctum')->group(function () {
     Route::delete('/{id}', [SorularController::class, 'destroy']);
 });
 
-use App\Http\Controllers\Api\MemberController;
-
+// Member işlemleri
 Route::apiResource('members', MemberController::class);
-
 
 // Score işlemleri
 Route::prefix('scores')->group(function () {
@@ -45,8 +49,6 @@ Route::prefix('files')->group(function () {
     Route::post('/', [FileController::class, 'store']);
     Route::get('/{id}/download', [FileController::class, 'download']);
 });
-
-Route::apiResource('members', App\Http\Controllers\API\MemberController::class);
 
 // Transcribe işlemleri
 Route::prefix('transcribe')->group(function () {

@@ -18,6 +18,7 @@ class Kernel extends HttpKernel
         \App\Http\Middleware\Cors::class, // Eklenen Cors Middleware
         \App\Http\Middleware\Cors::class,
 
+
     ];
 
 
@@ -37,6 +38,12 @@ class Kernel extends HttpKernel
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
     ];
+
+    protected $routeMiddleware = [
+        // ... mevcut middleware'ler ...
+        'check.media.upload' => \App\Http\Middleware\CheckMediaUpload::class,
+    ];
+
 
 
     protected $middlewareAliases = [

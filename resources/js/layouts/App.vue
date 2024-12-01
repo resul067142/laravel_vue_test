@@ -25,6 +25,7 @@
             <router-link to="/sesmetin" class="hamburger-menu-item" @click="handleNavClick">Ses Metin</router-link>
             <router-link to="/harita" class="hamburger-menu-item" @click="handleNavClick">Harita</router-link>
             <router-link to="/aile" class="hamburger-menu-item" @click="handleNavClick">aile</router-link>
+            <router-link to="/kisitespit" class="hamburger-menu-item" @click="handleNavClick">kisitespit</router-link>
         </div>
 
         <!-- Main Content -->
