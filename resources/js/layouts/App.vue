@@ -1,32 +1,37 @@
 <template>
     <div id="app" class="app-container">
         <!-- Hamburger Menu and Main Navigation -->
-        <div class="nav-container" style="padding: 10px 20px; justify-content: center;">
-            <div class="hamburger-menu" @click="toggleHamburgerMenu" style="padding: 20px; border-radius: 12px;">
-                <i class="fas fa-stream fa-3x"></i>
+        <div class="nav-container compact-nav beautiful-nav">
+            <div class="hamburger-menu" @click="toggleHamburgerMenu">
+                <i class="fas fa-bars fa-2x"></i>
             </div>
-            <div class="nav-links" style="flex: 1; justify-content: space-evenly; /* adjusted for even spacing */ /* adjusted for better alignment */ align-items: center;">
+            <div class="nav-links compact-nav-links">
                 <router-link to="/" class="nav-link" @click="handleNavClick">Ana Sayfa</router-link>
-                <router-link v-if="!isAuth" to="/scores" class="nav-link">Sıralama</router-link>
+<!--                <router-link v-if="!isAuth" to="/scores" class="nav-link">Sıralama</router-link>-->
                 <router-link v-if="!isAuth" to="/admin" class="nav-link" @click="handleAdminLoginClick">Yönetici Girişi</router-link>
                 <button v-if="isAuth" type="button" @click="çıkışYap" class="çıkışYap-button">Yönetici Çıkışı</button>
             </div>
         </div>
 
         <!-- Hamburger Menu Content -->
-        <div v-if="hamburgerMenuVisible" class="hamburger-menu-content">
-            <router-link to="/sorular" v-if="isAuth" class="hamburger-menu-item" @click="handleNavClick">Sorular</router-link>
-            <router-link to="/video" class="hamburger-menu-item" @click="handleNavClick">Video</router-link>
-            <router-link to="/belge" class="hamburger-menu-item" @click="handleNavClick">Belge</router-link>
-            <router-link to="/antreman" class="hamburger-menu-item" @click="handleNavClick">Antreman</router-link>
-            <router-link to="/dosya" class="hamburger-menu-item" @click="handleNavClick">Dosyalar</router-link>
-            <router-link to="/puanlama" class="hamburger-menu-item" @click="handleNavClick">Puanlama</router-link>
-            <router-link to="/soytakip" class="hamburger-menu-item" @click="handleNavClick">Soy Takip</router-link>
-            <router-link to="/sesmetin" class="hamburger-menu-item" @click="handleNavClick">Ses Metin</router-link>
-            <router-link to="/harita" class="hamburger-menu-item" @click="handleNavClick">Harita</router-link>
-            <router-link to="/aile" class="hamburger-menu-item" @click="handleNavClick">aile</router-link>
-            <router-link to="/kisitespit" class="hamburger-menu-item" @click="handleNavClick">kisitespit</router-link>
-        </div>
+        <transition name="fade">
+            <div v-if="hamburgerMenuVisible" class="hamburger-menu-content beautiful-menu-content">
+                <router-link to="/sorular" v-if="isAuth" class="hamburger-menu-item" @click="handleNavClick">Sorular</router-link>
+                <router-link to="/antreman" class="hamburger-menu-item" @click="handleNavClick">Antreman</router-link>
+<!--                <router-link v-if="!isAuth" to="/scores" class="hamburger-menu-item" @click="handleNavClick">SIRALAMA</router-link>-->
+                <router-link to="/scores" class="hamburger-menu-item" @click="handleNavClick">SIRALAMA</router-link>
+                <router-link to="/soytakip" class="hamburger-menu-item" @click="handleNavClick">Soy Takip</router-link>
+                <router-link to="/kisitespit" class="hamburger-menu-item" @click="handleNavClick">Kisitespit</router-link>
+                <router-link to="/video" class="hamburger-menu-item" @click="handleNavClick">Video</router-link>
+                <router-link to="/belge" class="hamburger-menu-item" @click="handleNavClick">Belge</router-link>
+                <router-link to="/dosya" class="hamburger-menu-item" @click="handleNavClick">Dosyalar</router-link>
+                <router-link to="/puanlama" class="hamburger-menu-item" @click="handleNavClick">Puanlama</router-link>
+                <router-link to="/sesmetin" class="hamburger-menu-item" @click="handleNavClick">Ses Metin</router-link>
+                <router-link to="/harita" class="hamburger-menu-item" @click="handleNavClick">Harita</router-link>
+<!--                <router-link to="/aile" class="hamburger-menu-item" @click="handleNavClick">Aile</router-link>-->
+
+            </div>
+        </transition>
 
         <!-- Main Content -->
         <div class="main-content">
@@ -36,15 +41,6 @@
             <div v-if="convertedAudioFile" class="audio-file-container">
                 <h3>Ses Dönüştürülen Metin Dosyası</h3>
                 <a :href="convertedAudioFile" download="converted_text.txt" class="download-button">Metin Dosyasını İndir</a>
-            </div>
-        </div>
-
-        <!-- Exam Confirmation Modal -->
-        <div v-if="showModal" class="modal">
-            <div class="modal-content">
-                <h2>Sınav Uygulaması</h2>
-                <p>Hoş geldiniz! Bu sayfa Yazılım Dersi Sınav Uygulamasıdır. Kayıt olmadan sınava katılmak için sadece bir fotoğraf yükleyip adınızı girmeniz yeterlidir. <hr> Sınav sonuçlarınızı aldıktan sonra genel sıralama listesindeki yerinizi görebilirsiniz. Başarılar dileriz!</p>
-                <button @click="closeModal" class="modal-button">Tamam</button>
             </div>
         </div>
 
@@ -115,102 +111,113 @@ export default {
 </script>
 
 <style scoped>
+/* Reset some basic styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
 /* Navigation Container Styles */
 .nav-container {
     display: flex;
-    justify-content: space-evenly; /* adjusted for even spacing */ /* adjusted for better alignment */
     align-items: center;
-    padding: 8px; /* slightly reduced padding for compactness */
-    background-color: #1e90ff; /* updated to make it more visually appealing */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4); /* enhanced shadow for a more defined appearance */
+    padding: 10px 20px;
+    background-color: #3498db;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
+    max-width: 400px;
+    border-radius: 25px;
     z-index: 1000;
-    border-radius: 15px; /* smoother rounded corners for a modern look */
-    margin: 0;
     color: white;
     font-weight: bold;
 }
 
+.compact-nav-links {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+
 .hamburger-menu {
-    padding: 8px; /* slightly reduced padding for compactness */ /* increased padding for better visual balance */
-    background-color: #ff4444;
+    padding: 10px;
+    background-color: #e74c3c;
     border-radius: 50%;
-    transition: transform 0.3s ease;
-    margin-right: 5px; /* further reduced margin for closer alignment */ /* reduced margin for closer positioning */
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    cursor: pointer;
+    margin-right: 15px;
+    flex-shrink: 0;
 }
 
 .hamburger-menu:hover {
-    transform: scale(1.1);
+    transform: scale(1.2);
+    background-color: #c0392b;
 }
 
 .hamburger-menu-content {
     position: fixed;
-    top: 60px;
-    left: 10px;
-    background-color: #2c2c2e;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-    border-radius: 15px; /* smoother rounded corners for a modern look */
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #34495e;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.5);
+    border-radius: 15px;
     z-index: 2000;
-    padding: 15px;
-    min-width: 200px;
+    padding: 20px;
+    min-width: 220px;
     display: flex;
     flex-direction: column;
-    gap: 2px; /* reduced gap for tighter alignment */ /* reduced gap for closer alignment */
+    gap: 10px;
+    animation: fade-in 0.3s ease;
 }
 
 .hamburger-menu-item {
-    color: #f0f0f3;
+    color: #ecf0f1;
     text-decoration: none;
     font-weight: bold;
-    padding: 8px; /* slightly reduced padding for compactness */
-    border-radius: 5px;
+    padding: 12px;
+    border-radius: 8px;
     transition: background-color 0.3s ease;
 }
 
 .hamburger-menu-item:hover {
-    background-color: #ff6347;
-}
-
-.nav-links {
-    display: flex;
-    gap: 2px; /* reduced gap for tighter alignment */ /* reduced gap for closer alignment */
-    flex: 1;
-    justify-content: space-around;
-    align-items: center;
+    background-color: #e67e22;
 }
 
 .nav-link {
     color: white;
     text-decoration: none;
-    padding: 8px 12px;
-    border-radius: 15px; /* smoother rounded corners for a modern look */
+    padding: 8px 15px;
+    border-radius: 20px;
     transition: background-color 0.3s ease;
-    background-color: #2c2c2e; /* darker shade for better contrast */
+    background-color: #2c3e50;
     white-space: nowrap;
-    font-size: 1em; /* increased font size for readability */
+    font-size: 1em;
 }
 
 .nav-link:hover {
-    background-color: #1e90ff;
+    background-color: #2980b9;
 }
 
 /* Logout Button Styles */
 .çıkışYap-button {
-    background-color: #dc3545;
+    background-color: #e74c3c;
     color: white;
     border: none;
-    padding: 8px 12px;
-    border-radius: 15px; /* smoother rounded corners for a modern look */
+    padding: 8px 15px;
+    border-radius: 20px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    font-size: 1em; /* increased font size for readability */
+    font-size: 1em;
 }
 
 .çıkışYap-button:hover {
-    background-color: #c82333;
+    background-color: #c0392b;
 }
 
 /* Modal Styles */
@@ -220,7 +227,7 @@ export default {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.6);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -229,40 +236,42 @@ export default {
 
 .modal-content {
     background: white;
-    padding: 30px;
-    border-radius: 15px; /* smoother rounded corners for a modern look */
+    padding: 40px;
+    border-radius: 20px;
     text-align: center;
     max-width: 90%;
 }
 
 .modal-button {
-    background-color: #1e90ff; /* updated to make it more visually appealing */
+    background-color: #3498db;
     color: white;
     border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
+    padding: 12px 25px;
+    border-radius: 10px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    font-size: 1em;
+    font-size: 1.1em;
 }
 
 .modal-button:hover {
-    background-color: #0056b3;
+    background-color: #2980b9;
 }
 
 /* Bottom Menu Styles */
 .bottom-menu {
     position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background-color: #2c2c2e; /* darker shade for better contrast */
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #2c3e50;
     display: flex;
     justify-content: space-around;
-    padding: 8px; /* slightly reduced padding for compactness */
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
-    margin-bottom: 4px;
+    padding: 10px 25px;
+    box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.3);
+    border-radius: 25px;
     z-index: 1000;
+    width: calc(100% - 40px);
+    max-width: 400px;
 }
 
 .bottom-menu-item {
@@ -271,85 +280,91 @@ export default {
     align-items: center;
     text-decoration: none;
     font-weight: bold;
-    font-size: 1em; /* increased font size for readability */
+    font-size: 0.85em;
     color: white;
-    padding: 8px; /* slightly reduced padding for compactness */ /* increased padding for better visual balance */
-    border-radius: 5px;
+    padding: 10px;
+    border-radius: 10px;
     transition: transform 0.3s ease;
     text-align: center;
 }
 
 .bottom-menu-item i {
-    font-size: 20px;
+    font-size: 24px;
     margin-bottom: 5px;
     transition: transform 0.3s ease;
 }
 
 .bottom-menu-item:hover {
-    transform: scale(1.1);
+    transform: scale(1.15);
 }
 
 /* Exam Create Button Animation */
 .exam-create {
     background-color: #e74c3c;
-    transition: background-color 6s ease-in-out;
+    transition: background-color 0.3s ease-in-out;
 }
 
 .exam-create:hover {
-    background-color: #0056b3;
+    background-color: #c0392b;
 }
 
-@keyframes pulse-red {
-    0%, 100% {
-        background-color: #e74c3c;
-    }
-    50% {
-        background-color: #0056b3;
-    }
+/* Audio File Container */
+.audio-file-container {
+    margin-top: 30px;
+    text-align: center;
 }
 
-@keyframes grow-shrink {
-    0%, 100% {
-        font-size: 1em; /* increased font size for readability */
-    }
-    100% {
-        font-size: 1em;
-    }
+.download-button {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 12px 20px;
+    background-color: #3498db;
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.download-button:hover {
+    background-color: #2980b9;
 }
 
 /* Responsive Styles */
-@media (max-width: 768px) {
+@media (max-width: 360px) {
     .nav-container {
-        padding: 8px; /* slightly reduced padding for compactness */
-        justify-content: space-evenly; /* adjusted for even spacing */ /* adjusted for better alignment */
-        flex-wrap: nowrap;
+        width: calc(100% - 20px);
+        padding: 10px;
     }
     .hamburger-menu {
-        display: block;
+        padding: 8px;
     }
     .nav-links {
-        display: flex;
-        width: 100%;
-        justify-content: space-evenly; /* adjusted for even spacing */ /* adjusted for better alignment */
-        padding: 0;
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
     }
     .nav-link, .çıkışYap-button {
-        flex: 1;
-        text-align: center;
-        margin: 0 5px;
+        width: auto;
+        text-align: left;
+        margin: 2px 0;
     }
     .bottom-menu {
-        flex-direction: row;
-        gap: 2px; /* reduced gap for tighter alignment */
-        padding: 15px;
-        background-color: rgba(52, 58, 64, 0.9);
+        width: calc(100% - 20px);
+        padding: 10px;
     }
     .bottom-menu-item {
-        font-size: 0.7em;
+        font-size: 0.75em;
     }
     .main-content {
-        padding: 8px; /* slightly reduced padding for compactness */
-        margin-top: 100px;
+        padding: 15px;
+        margin-top: 90px;
+        margin-bottom: 90px;
     }
+}
+
+/* Fade-in animation for the hamburger menu */
+@keyframes fade-in {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
 }
 </style>
