@@ -1,51 +1,43 @@
 <template>
-    <div id="app" class="app-container">
-        <!-- Hamburger Menu and Main Navigation -->
-        <div class="nav-container compact-nav beautiful-nav">
-            <div class="hamburger-menu" @click="toggleHamburgerMenu">
-                <i class="fas fa-bars fa-2x"></i>
+    <div id="app" class="app-container"  >
+        <header class="top-nav" >
+            <div class="top-nav-inner">
+                <div class="hamburger-menu" @click="toggleHamburgerMenu">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <nav class="nav-links"   v-if="!hamburgerMenuVisible">
+                    <router-link to="/" class="nav-link"  @click="handleNavClick">Ana Sayfa</router-link>
+                    <router-link v-if="!isAuth" to="/admin" class="nav-link" @click="handleAdminLoginClick">Yönetici Girişi</router-link>
+                    <button v-if="isAuth" type="button" @click="çıkışYap" class="logout-button">Çıkış Yap</button>
+                </nav>
             </div>
-            <div class="nav-links compact-nav-links">
-                <router-link to="/" class="nav-link" @click="handleNavClick">Ana Sayfa</router-link>
-<!--                <router-link v-if="!isAuth" to="/scores" class="nav-link">Sıralama</router-link>-->
-                <router-link v-if="!isAuth" to="/admin" class="nav-link" @click="handleAdminLoginClick">Yönetici Girişi</router-link>
-                <button v-if="isAuth" type="button" @click="çıkışYap" class="çıkışYap-button">Yönetici Çıkışı</button>
-            </div>
-        </div>
+        </header>
 
-        <!-- Hamburger Menu Content -->
         <transition name="fade">
-            <div v-if="hamburgerMenuVisible" class="hamburger-menu-content beautiful-menu-content">
-                <router-link to="/sorular" v-if="isAuth" class="hamburger-menu-item" @click="handleNavClick">Sorular</router-link>
-                <router-link to="/antreman" class="hamburger-menu-item" @click="handleNavClick">Antreman</router-link>
-<!--                <router-link v-if="!isAuth" to="/scores" class="hamburger-menu-item" @click="handleNavClick">SIRALAMA</router-link>-->
-                <router-link to="/scores" class="hamburger-menu-item" @click="handleNavClick">SIRALAMA</router-link>
-                <router-link to="/soytakip" class="hamburger-menu-item" @click="handleNavClick">Soy Takip</router-link>
-                <router-link to="/kisitespit" class="hamburger-menu-item" @click="handleNavClick">Kisitespit</router-link>
-                <router-link to="/video" class="hamburger-menu-item" @click="handleNavClick">Video</router-link>
-                <router-link to="/belge" class="hamburger-menu-item" @click="handleNavClick">Belge</router-link>
-                <router-link to="/dosya" class="hamburger-menu-item" @click="handleNavClick">Dosyalar</router-link>
-                <router-link to="/puanlama" class="hamburger-menu-item" @click="handleNavClick">Puanlama</router-link>
-                <router-link to="/sesmetin" class="hamburger-menu-item" @click="handleNavClick">Ses Metin</router-link>
-                <router-link to="/harita" class="hamburger-menu-item" @click="handleNavClick">Harita</router-link>
-<!--                <router-link to="/aile" class="hamburger-menu-item" @click="handleNavClick">Aile</router-link>-->
-
+            <div v-if="hamburgerMenuVisible" class="mobile-menu">
+                <router-link to="/sorular" v-if="isAuth" class="mobile-menu-item" @click="handleNavClick">Sorular</router-link>
+                <router-link to="/antreman" class="mobile-menu-item" @click="handleNavClick">Antreman</router-link>
+                <router-link to="/scores" class="mobile-menu-item" @click="handleNavClick">Sıralama</router-link>
+                <router-link to="/soytakip" class="mobile-menu-item" @click="handleNavClick">Soy Takip</router-link>
+                <router-link to="/kisitespit" class="mobile-menu-item" @click="handleNavClick">Kişi Tespit</router-link>
+                <router-link to="/video" class="mobile-menu-item" @click="handleNavClick">Video</router-link>
+                <router-link to="/belge" class="mobile-menu-item" @click="handleNavClick">Belge</router-link>
+                <router-link to="/dosya" class="mobile-menu-item" @click="handleNavClick">Dosyalar</router-link>
+                <router-link to="/puanlama" class="mobile-menu-item" @click="handleNavClick">Puanlama</router-link>
+                <router-link to="/sesmetin" class="mobile-menu-item" @click="handleNavClick">Ses Metin</router-link>
+                <router-link to="/harita" class="mobile-menu-item" @click="handleNavClick">Harita</router-link>
             </div>
         </transition>
 
-        <!-- Main Content -->
-        <div class="main-content">
+        <main class="main-content">
             <router-view></router-view>
-
-            <!-- Ses Metin Dosyası -->
             <div v-if="convertedAudioFile" class="audio-file-container">
                 <h3>Ses Dönüştürülen Metin Dosyası</h3>
                 <a :href="convertedAudioFile" download="converted_text.txt" class="download-button">Metin Dosyasını İndir</a>
             </div>
-        </div>
+        </main>
 
-        <!-- Bottom Icon Menu -->
-        <div class="bottom-menu">
+        <footer class="bottom-menu">
             <router-link to="/profile" class="bottom-menu-item">
                 <i class="fas fa-user"></i>
                 <span>Kullanıcı Profili</span>
@@ -54,19 +46,19 @@
                 <i class="fas fa-trophy"></i>
                 <span>Rozet Sayfası</span>
             </router-link>
-            <router-link to="/exam-create" class="bottom-menu-item exam-create">
+            <router-link to="/exam-create" class="bottom-menu-item special-item">
                 <i class="fas fa-edit"></i>
                 <span>Sınav Oluştur</span>
             </router-link>
             <router-link to="/categories" class="bottom-menu-item">
                 <i class="fas fa-list"></i>
-                <span>Sınav Kategorileri</span>
+                <span>Kategoriler</span>
             </router-link>
             <router-link to="/statistics" class="bottom-menu-item">
                 <i class="fas fa-chart-bar"></i>
-                <span>Sınav İstatistikleri</span>
+                <span>İstatistikler</span>
             </router-link>
-        </div>
+        </footer>
     </div>
 </template>
 
@@ -110,261 +102,152 @@ export default {
 }
 </script>
 
-<style scoped>
-/* Reset some basic styles */
+<style>
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
-
-/* Navigation Container Styles */
-.nav-container {
+.app-container {
     display: flex;
-    align-items: center;
-    padding: 10px 20px;
-    background-color: #3498db;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-    position: fixed;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: auto;
-    max-width: 400px;
-    border-radius: 25px;
-    z-index: 1000;
-    color: white;
-    font-weight: bold;
+    flex-direction: column;
+    min-height: 100vh;
 }
-
-.compact-nav-links {
+.top-nav {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: #3498db;
+    padding: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+.top-nav-inner {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
+}
+.hamburger-menu {
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 5px 10px;
+}
+.nav-links {
+    display: flex;
     gap: 15px;
 }
-
-.hamburger-menu {
-    padding: 10px;
-    background-color: #e74c3c;
-    border-radius: 50%;
-    transition: transform 0.3s ease, background-color 0.3s ease;
+.nav-link {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+.nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+.logout-button {
+    background: #e74c3c;
+    color: #fff;
+    border: none;
+    padding: 5px 15px;
+    border-radius: 5px;
     cursor: pointer;
-    margin-right: 15px;
-    flex-shrink: 0;
 }
-
-.hamburger-menu:hover {
-    transform: scale(1.2);
-    background-color: #c0392b;
+.logout-button:hover {
+    background: #c0392b;
 }
-
-.hamburger-menu-content {
-    position: fixed;
-    top: 80px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #34495e;
-    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.5);
-    border-radius: 15px;
-    z-index: 2000;
-    padding: 20px;
-    min-width: 220px;
+.mobile-menu {
+    position: absolute;
+    top: 60px;
+    left: 0;
+    right: 0;
+    background: #34495e;
+    padding: 15px 0;
+    z-index: 20;
     display: flex;
     flex-direction: column;
     gap: 10px;
-    animation: fade-in 0.3s ease;
 }
-
-.hamburger-menu-item {
+.mobile-menu-item {
     color: #ecf0f1;
     text-decoration: none;
-    font-weight: bold;
-    padding: 12px;
-    border-radius: 8px;
-    transition: background-color 0.3s ease;
+    padding: 10px 20px;
+    font-weight: 600;
 }
-
-.hamburger-menu-item:hover {
-    background-color: #e67e22;
+.mobile-menu-item:hover {
+    background: #2c3e50;
 }
-
-.nav-link {
-    color: white;
+.main-content {
+    flex: 1;
+    padding: 15px;
+}
+.audio-file-container {
+    margin-top: 20px;
+    text-align: center;
+}
+.download-button {
+    display: inline-block;
+    background: #3498db;
+    color: #fff;
     text-decoration: none;
     padding: 8px 15px;
-    border-radius: 20px;
-    transition: background-color 0.3s ease;
-    background-color: #2c3e50;
-    white-space: nowrap;
-    font-size: 1em;
+    border-radius: 5px;
+    margin-top: 10px;
 }
-
-.nav-link:hover {
-    background-color: #2980b9;
+.download-button:hover {
+    background: #2980b9;
 }
-
-/* Logout Button Styles */
-.çıkışYap-button {
-    background-color: #e74c3c;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    font-size: 1em;
-}
-
-.çıkışYap-button:hover {
-    background-color: #c0392b;
-}
-
-/* Modal Styles */
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.6);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 3000;
-}
-
-.modal-content {
-    background: white;
-    padding: 40px;
-    border-radius: 20px;
-    text-align: center;
-    max-width: 90%;
-}
-
-.modal-button {
-    background-color: #3498db;
-    color: white;
-    border: none;
-    padding: 12px 25px;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    font-size: 1.1em;
-}
-
-.modal-button:hover {
-    background-color: #2980b9;
-}
-
-/* Bottom Menu Styles */
 .bottom-menu {
-    position: fixed;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #2c3e50;
+    position: sticky;
+    bottom: 0;
+    background: #2c3e50;
     display: flex;
     justify-content: space-around;
-    padding: 10px 25px;
-    box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.3);
-    border-radius: 25px;
-    z-index: 1000;
-    width: calc(100% - 40px);
-    max-width: 400px;
+    padding: 10px;
+    box-shadow: 0 -1px 5px rgba(0,0,0,0.2);
 }
-
 .bottom-menu-item {
+    text-decoration: none;
+    color: #fff;
+    font-size: 0.85em;
+    text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
-    text-decoration: none;
-    font-weight: bold;
-    font-size: 0.85em;
-    color: white;
-    padding: 10px;
-    border-radius: 10px;
-    transition: transform 0.3s ease;
-    text-align: center;
+    align-items: center;
+    gap: 2px;
+    transition: transform 0.2s;
 }
-
 .bottom-menu-item i {
-    font-size: 24px;
-    margin-bottom: 5px;
-    transition: transform 0.3s ease;
+    font-size: 20px;
 }
-
 .bottom-menu-item:hover {
-    transform: scale(1.15);
+    transform: scale(1.1);
 }
-
-/* Exam Create Button Animation */
-.exam-create {
-    background-color: #e74c3c;
-    transition: background-color 0.3s ease-in-out;
+.special-item {
+    background: #e74c3c;
+    padding: 5px 10px;
+    border-radius: 5px;
 }
-
-.exam-create:hover {
-    background-color: #c0392b;
+.special-item:hover {
+    background: #c0392b;
 }
-
-/* Audio File Container */
-.audio-file-container {
-    margin-top: 30px;
-    text-align: center;
-}
-
-.download-button {
-    display: inline-block;
-    margin-top: 15px;
-    padding: 12px 20px;
-    background-color: #3498db;
-    color: white;
-    text-decoration: none;
-    border-radius: 10px;
-    transition: background-color 0.3s ease;
-}
-
-.download-button:hover {
-    background-color: #2980b9;
-}
-
-/* Responsive Styles */
-@media (max-width: 360px) {
-    .nav-container {
-        width: calc(100% - 20px);
-        padding: 10px;
-    }
-    .hamburger-menu {
-        padding: 8px;
-    }
+@media (max-width: 480px) {
     .nav-links {
-        flex-direction: row;
-        align-items: center;
-        gap: 8px;
+        display: none;
     }
-    .nav-link, .çıkışYap-button {
-        width: auto;
-        text-align: left;
-        margin: 2px 0;
-    }
-    .bottom-menu {
-        width: calc(100% - 20px);
-        padding: 10px;
+    .mobile-menu-item {
+        font-size: 0.9em;
     }
     .bottom-menu-item {
         font-size: 0.75em;
     }
-    .main-content {
-        padding: 15px;
-        margin-top: 90px;
-        margin-bottom: 90px;
-    }
 }
-
-/* Fade-in animation for the hamburger menu */
-@keyframes fade-in {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
+.fade-enter-active, .fade-leave-active {
+    transition: opacity 0.3s;
+}
+.fade-enter, .fade-leave-to {
+    opacity: 0;
 }
 </style>
