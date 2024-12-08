@@ -1,190 +1,695 @@
 <template>
-    <div id="app">
-        <div class="app-container">
-            <!-- Hamburger Menu and Main Navigation -->
-            <div class="nav-container">
-                <div class="hamburger-menu" @click="toggleHamburgerMenu">
-                    <i class="fas fa-th fa-3x"></i>
-                </div>
-                <div class="nav-links">
-                    <router-link to="/" class="nav-link" @click="handleNavClick">Ana Sayfa</router-link>
-                    <router-link v-if="!isAuth" to="/scores" class="nav-link">Sıralama</router-link>
-                    <router-link v-if="!isAuth" to="/admin" class="nav-link" @click="handleAdminLoginClick">Admin Giriş</router-link>
-                    <button v-if="isAuth" type="button" @click="logout" class="logout-button">Admin Çıkış</button>
-                </div>
-            </div>
+    <div :class="['app-container', theme]">
+        <!-- Tema Seçimi -->
+        <div class="theme-toggle">
+            <button @click="toggleTheme" aria-label="Temayı Değiştir">
+                {{ theme === 'light' ? '🌙 Gölge Modu' : '☀️ Açık Mod' }}
+            </button>
+        </div>
 
-            <!-- Hamburger Menu Content -->
-            <div v-if="hamburgerMenuVisible" class="hamburger-menu-content">
-                <router-link to="/sorular" v-if="isAuth" class="hamburger-menu-item" @click="handleNavClick">Sorular</router-link>
-                <router-link to="/video" class="hamburger-menu-item" @click="handleNavClick">Video</router-link>
-                <router-link to="/belge" class="hamburger-menu-item" @click="handleNavClick">Belge</router-link>
-                <router-link to="/antreman" class="hamburger-menu-item" @click="handleNavClick">Antreman</router-link>
-                <router-link to="/dosya" class="hamburger-menu-item" @click="handleNavClick">Dosyalar</router-link>
-                <router-link to="/puanlama" class="hamburger-menu-item" @click="handleNavClick">Puanlama</router-link>
-                <router-link to="/soytakip" class="hamburger-menu-item" @click="handleNavClick">Takip</router-link>
-                <router-link to="/sesmetin" class="hamburger-menu-item" @click="handleNavClick">Ses Metin</router-link>
-                <router-link to="/harita" class="hamburger-menu-item" @click="handleNavClick">Harita</router-link>
+        <!-- Kullanıcı Kimlik Doğrulama -->
+        <div class="auth-section">
+            <div v-if="!isAuthenticated">
+                <h2>Giriş Yap</h2>
+                <form @submit.prevent="login">
+                    <input type="text" v-model="loginForm.username" placeholder="Kullanıcı Adı" required />
+                    <input type="password" v-model="loginForm.password" placeholder="Şifre" required />
+                    <button type="submit">Giriş Yap</button>
+                </form>
             </div>
+            <div v-else>
+                <h2>Hoş Geldiniz, {{ user.username }}</h2>
+                <button @click="logout">Çıkış Yap</button>
+            </div>
+        </div>
 
-            <!-- Ses Dosyası Yükleme Bölümü -->
-            <div class="upload-container">
-                <h2>Ses Dosyası Kütüphanesi</h2>
-                <div class="upload-section">
-                    <input type="file" @change="handleAudioUpload" accept="audio/*" placeholder="Ses dosyası seçin..." />
-                    <button @click="transcribeAudio" class="transcribe-button">Ses Dosyasını Metine Dönüştür</button>
-                </div>
-            </div>
+        <!-- Sürükle ve Bırak Yükleme Alanı -->
+        <div
+            class="dropzone"
+            @dragover.prevent
+            @drop.prevent="handleDrop"
+            :class="{ 'is-dragover': isDragOver }"
+            @dragenter="isDragOver = true"
+            @dragleave="isDragOver = false"
+        >
+            <p>Sürükleyip bırakın veya tıklayın</p>
+            <input
+                type="file"
+                @change="handleAudioUpload"
+                accept="audio/*"
+                multiple
+                hidden
+                ref="fileInput"
+            />
+            <button @click="triggerFileSelect" class="select-button">Dosya Seç</button>
+        </div>
 
-            <div v-if="transcription" class="transcription-result">
-                <h3>Transkripsiyon:</h3>
-                <p>{{ transcription }}</p>
+        <!-- Ses Dosyası Yükleme Bölümü -->
+        <div class="upload-container">
+            <h1>SES DOSYASINI METİN DOSYASINA DÖNÜŞTÜRME</h1>
+            <hr>
+            <div class="upload-section">
+                <button @click="triggerFileSelect" class="select-button">Dosya Seç</button>
+                <select v-model="selectedLanguage" aria-label="Transkripsiyon Dili Seçin">
+                    <option value="tr-TR">Türkçe</option>
+                    <option value="ku-TR">Kürtçe</option>
+                    <option value="zaz-TR">Zazaca</option>
+                    <option value="ar-TR">Arapça</option>
+                    <option value="ce-TR">Çerkesçe</option>
+                    <option value="el-TR">Yunanca</option>
+                    <option value="hy-TR">Ermenice</option>
+                    <option value="ka-TR">Gürcüce</option>
+                    <option value="lzz-TR">Lazca</option>
+                    <!-- Diğer dilleri buraya ekleyebilirsiniz -->
+                </select>
+                <button
+                    @click="transcribeAudio"
+                    class="transcribe-button"
+                    :disabled="!audioFiles.length || isLoading || !isAuthenticated"
+                    aria-label="Ses dosyasını metine dönüştür"
+                >
+                    {{ isLoading ? 'Dönüştürülüyor...' : 'Ses Dosyasını Metine Dönüştür' }}
+                </button>
             </div>
+            <div v-if="errorMessage" class="error-message">
+                {{ errorMessage }}
+            </div>
+        </div>
 
-            <!-- Exam Confirmation Modal -->
-            <div v-if="showModal" class="modal">
-                <div class="modal-content">
-                    <h2>Sınav Uygulaması</h2>
-                    <p>Hoş geldiniz! Bu sayfa Yazılım Dersi Sınav Uygulamasıdır. Kayıt olmadan sınava katılmak için sadece bir fotoğraf yükleyip adınızı girmeniz yeterlidir. <hr> Sınav sonuçlarınızı aldıktan sonra genel sıralama listesindeki yerinizi görebilirsiniz. Başarılar dileriz!</p>
-                    <button @click="closeModal" class="modal-button">Tamam</button>
-                </div>
-            </div>
+        <!-- İlerleme Çubuğu -->
+        <div v-if="isLoading" class="progress-bar">
+            <div class="progress" :style="{ width: progress + '%' }"></div>
+        </div>
 
-            <!-- Bottom Icon Menu -->
-            <div class="bottom-menu">
-                <router-link to="/profile" class="bottom-menu-item">
-                    <i class="fas fa-user"></i>
-                    <span>Kullanıcı Profili</span>
-                </router-link>
-                <router-link to="/badges" class="bottom-menu-item">
-                    <i class="fas fa-trophy"></i>
-                    <span>Rozet Sayfası</span>
-                </router-link>
-                <router-link to="/exam-create" class="bottom-menu-item exam-create">
-                    <i class="fas fa-edit"></i>
-                    <span>Sınav Oluştur</span>
-                </router-link>
-                <router-link to="/categories" class="bottom-menu-item">
-                    <i class="fas fa-list"></i>
-                    <span>Sınav Kategorileri</span>
-                </router-link>
-                <router-link to="/statistics" class="bottom-menu-item">
-                    <i class="fas fa-chart-bar"></i>
-                    <span>Sınav İstatistikleri</span>
-                </router-link>
+        <!-- Transkripsiyon Sonucu -->
+        <div v-if="transcription" class="transcription-result">
+            <h3>Transkripsiyon:</h3>
+            <textarea v-model="transcription" class="transcription-textarea" aria-label="Transkripsiyon Metni"></textarea>
+            <div class="actions">
+                <button @click="copyToClipboard" aria-label="Metni Panoya Kopyala">📋 Kopyala</button>
+                <button @click="downloadTranscription" aria-label="Metni İndir">⬇️ İndir</button>
+                <button @click="summarizeTranscription" aria-label="Metni Özetle">📝 Özeti Al</button>
+                <button @click="shareTranscription" aria-label="Metni Paylaş">📤 Paylaş</button>
+                <button @click="exportAsPDF" aria-label="PDF Olarak İndir">📄 PDF Olarak İndir</button>
             </div>
+            <audio v-if="audioUrl" :src="audioUrl" controls aria-label="Yüklenen Ses Dosyası"></audio>
+        </div>
+
+        <!-- Metin Düzenleme Araçları -->
+        <div v-if="transcription" class="editor-tools">
+            <button @click="boldText" aria-label="Kalın Metin">B</button>
+            <button @click="italicText" aria-label="İtalik Metin">I</button>
+            <button @click="underlineText" aria-label="Altı Çizili Metin">U</button>
+        </div>
+
+        <!-- Transkripsiyon Geçmişi -->
+        <div v-if="transcriptionHistory.length" class="history-container">
+            <h2>Transkripsiyon Geçmişi</h2>
+            <ul>
+                <li v-for="(item, index) in transcriptionHistory" :key="index">
+                    <p><strong>Dosya:</strong> {{ item.fileName }}</p>
+                    <p><strong>Dil:</strong> {{ getLanguageName(item.language) }}</p>
+                    <p><strong>Transkripsiyon:</strong> {{ item.transcription }}</p>
+                    <audio v-if="item.audioUrl" :src="item.audioUrl" controls aria-label="Geçmiş Ses Dosyası"></audio>
+                    <button @click="deleteHistory(index)" aria-label="Geçmişi Sil">🗑️ Sil</button>
+                    <hr>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Bildirimler -->
+        <div v-if="notification.message" :class="['notification', notification.type]" role="alert" aria-live="assertive">
+            {{ notification.message }}
+        </div>
+
+        <!-- Transkripsiyon İstatistikleri -->
+        <div v-if="transcriptionHistory.length" class="statistics-container">
+            <h2>İstatistikler</h2>
+            <p>Toplam Transkripsiyon: {{ transcriptionHistory.length }}</p>
+            <p>Başarılı Transkripsiyonlar: {{ successfulTranscriptions }}</p>
+            <p>Başarısız Transkripsiyonlar: {{ failedTranscriptions }}</p>
+            <!-- Daha fazla istatistik ekleyebilirsiniz -->
+        </div>
+
+        <!-- Kullanıcı Profili -->
+        <div v-if="isAuthenticated" class="profile-container">
+            <h2>Kullanıcı Profili</h2>
+            <p><strong>Kullanıcı Adı:</strong> {{ user.username }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <button @click="updateProfile" aria-label="Profili Güncelle">Profili Güncelle</button>
         </div>
     </div>
 </template>
 
 <script>
 import axios from 'axios';
+import jsPDF from 'jspdf'; // PDF oluşturmak için jsPDF kütüphanesini ekleyin
+import html2canvas from 'html2canvas'; // HTML içeriğini canvas'a dönüştürmek için
 
 export default {
     data() {
         return {
-            audioFile: null, // Seçilen ses dosyası
-            transcription: '', // Dönüştürülen metin
-            isAuth: false,
-            showModal: true,
-            dropdownVisible: false,
-            dropdownPosition: {},
-            hamburgerMenuVisible: false,
+            audioFiles: [],             // Yüklenen ses dosyaları
+            transcription: '',          // Dönüştürülen metin
+            isLoading: false,           // Yükleme durumu
+            progress: 0,                // İlerleme çubuğu
+            errorMessage: '',           // Hata mesajı
+            selectedLanguage: 'tr-TR',  // Seçilen transkripsiyon dili
+            transcriptionHistory: [],   // Transkripsiyon geçmişi
+            isDragOver: false,          // Sürükle ve bırak durumu
+            theme: 'light',             // Tema durumu
+            audioUrl: '',               // Yüklenen ses dosyasının URL'si
+            notification: {             // Bildirim durumu
+                message: '',
+                type: '',                 // 'success' veya 'error'
+            },
+            isAuthenticated: false,     // Kullanıcının kimlik doğrulaması durumu
+            user: {                     // Kullanıcı bilgileri
+                username: '',
+                email: '',
+            },
+            loginForm: {                // Giriş formu
+                username: '',
+                password: '',
+            },
+            statistics: {               // İstatistikler
+                successfulTranscriptions: 0,
+                failedTranscriptions: 0,
+            },
         };
     },
     methods: {
-        handleAudioUpload(event) {
-            const uploadedAudio = event.target.files[0];
-            if (uploadedAudio) {
-                console.log("Yüklenmiş Ses Dosyası:", uploadedAudio);
-                this.audioFile = uploadedAudio;
-            }
+        /**
+         * Dosya seçme butonunu tetikler.
+         */
+        triggerFileSelect() {
+            this.$refs.fileInput.click();
         },
+
+        /**
+         * Dosya sürükleyip bırakıldığında çalışır.
+         * @param {DragEvent} event - Drop olayı
+         */
+        handleDrop(event) {
+            const files = Array.from(event.dataTransfer.files);
+            this.handleFiles(files);
+            this.isDragOver = false;
+        },
+
+        /**
+         * Dosya seçildiğinde veya sürükle bırak ile yüklendiğinde çalışır.
+         * @param {Event} event - Dosya yükleme olayı
+         */
+        handleAudioUpload(event) {
+            const files = Array.from(event.target.files);
+            this.handleFiles(files);
+        },
+
+        /**
+         * Dosyaları kontrol eder ve geçerli olanları ekler.
+         * @param {Array} files - Yüklenen dosyaların listesi
+         */
+        handleFiles(files) {
+            const validTypes = ['audio/mpeg', 'audio/wav', 'audio/mp3'];
+            const maxSize = 10 * 1024 * 1024; // 10MB
+
+            files.forEach(file => {
+                if (!validTypes.includes(file.type)) {
+                    this.showNotification(`Geçersiz dosya türü: ${file.name}`, 'error');
+                    return;
+                }
+                if (file.size > maxSize) {
+                    this.showNotification(`Dosya boyutu 10MB'ı aşamaz: ${file.name}`, 'error');
+                    return;
+                }
+                this.audioFiles.push(file);
+                this.showNotification(`Dosya yüklendi: ${file.name}`, 'success');
+            });
+        },
+
+        /**
+         * Ses dosyasını transkribe eder.
+         */
         async transcribeAudio() {
-            if (!this.audioFile) {
-                alert("Lütfen bir ses dosyası seçin!");
+            if (!this.audioFiles.length) {
+                this.showNotification("Lütfen en az bir ses dosyası seçin!", 'error');
                 return;
             }
 
+            this.isLoading = true;
+            this.progress = 0;
+            this.errorMessage = '';
+            this.transcription = '';
+
             const formData = new FormData();
-            formData.append('audio', this.audioFile);
+            this.audioFiles.forEach(file => {
+                formData.append('audio', file);
+            });
+            formData.append('language', this.selectedLanguage);
 
             try {
                 const response = await axios.post('/api/upload', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
-                        'Accept': 'application/json',  // Bunu ekleyin
+                        'Accept': 'application/json',
+                    },
+                    onUploadProgress: progressEvent => {
+                        this.progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
                     },
                 });
 
-
-
-
-                this.transcription = response.data.transcription;
-                console.log('Ses dosyası başarıyla metne dönüştürüldü:', this.transcription);
+                if (response.data && response.data.transcription) {
+                    this.transcription = response.data.transcription;
+                    this.audioUrl = URL.createObjectURL(this.audioFiles[0]); // İlk dosyanın URL'sini al
+                    this.addToHistory(this.audioFiles[0].name, this.selectedLanguage, this.transcription, this.audioUrl);
+                    this.statistics.successfulTranscriptions += 1;
+                    this.showNotification('Ses dosyası başarıyla metne dönüştürüldü.', 'success');
+                    console.log('Ses dosyası başarıyla metne dönüştürüldü:', this.transcription);
+                } else {
+                    this.statistics.failedTranscriptions += 1;
+                    this.showNotification('Transkripsiyon sonucu alınamadı.', 'error');
+                }
             } catch (error) {
                 console.error("Ses dosyası dönüştürülürken hata oluştu:", error);
-                alert("Ses dosyası dönüştürülürken bir hata oluştu. Lütfen tekrar deneyin.");
+                this.statistics.failedTranscriptions += 1;
+                if (error.response && error.response.data && error.response.data.message) {
+                    this.showNotification(error.response.data.message, 'error');
+                } else {
+                    this.showNotification("Ses dosyası dönüştürülürken bir hata oluştu. Lütfen tekrar deneyin.", 'error');
+                }
+            } finally {
+                this.isLoading = false;
+                this.progress = 0;
+                this.audioFiles = [];
             }
         },
+
+        /**
+         * Transkripsiyonu panoya kopyalar.
+         */
+        copyToClipboard() {
+            navigator.clipboard.writeText(this.transcription)
+                .then(() => {
+                    this.showNotification("Transkripsiyon panoya kopyalandı!", 'success');
+                })
+                .catch(err => {
+                    console.error("Panoya kopyalama hatası:", err);
+                    this.showNotification("Transkripsiyonu panoya kopyalama başarısız.", 'error');
+                });
+        },
+
+        /**
+         * Transkripsiyonu metin dosyası olarak indirir.
+         */
+        downloadTranscription() {
+            const blob = new Blob([this.transcription], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'transkripsiyon.txt';
+            link.click();
+            URL.revokeObjectURL(url);
+            this.showNotification("Transkripsiyon indirildi.", 'success');
+        },
+
+        /**
+         * Transkripsiyonu PDF olarak indirir.
+         */
+        exportAsPDF() {
+            const doc = new jsPDF();
+            doc.text(this.transcription, 10, 10);
+            doc.save('transkripsiyon.pdf');
+            this.showNotification("Transkripsiyon PDF olarak indirildi.", 'success');
+        },
+
+        /**
+         * Transkripsiyonu özetler.
+         */
+        async summarizeTranscription() {
+            if (!this.transcription) {
+                this.showNotification("Özetlenecek bir transkripsiyon yok!", 'error');
+                return;
+            }
+
+            this.isLoading = true;
+            this.errorMessage = '';
+
+            try {
+                const response = await axios.post('/api/summarize', {
+                    text: this.transcription,
+                    language: this.selectedLanguage,
+                }, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                });
+
+                if (response.data && response.data.summary) {
+                    this.transcription = response.data.summary;
+                    this.showNotification('Transkripsiyon başarıyla özetlendi.', 'success');
+                } else {
+                    this.showNotification('Özetleme sonucu alınamadı.', 'error');
+                }
+            } catch (error) {
+                console.error("Özetleme sırasında hata oluştu:", error);
+                this.showNotification("Transkripsiyon özetlenirken bir hata oluştu. Lütfen tekrar deneyin.", 'error');
+            } finally {
+                this.isLoading = false;
+            }
+        },
+
+        /**
+         * Transkripsiyonu paylaşır.
+         */
+        shareTranscription() {
+            const shareData = {
+                title: 'Transkripsiyon',
+                text: this.transcription,
+            };
+            if (navigator.share) {
+                navigator.share(shareData)
+                    .then(() => {
+                        this.showNotification("Transkripsiyon başarıyla paylaşıldı.", 'success');
+                    })
+                    .catch((err) => {
+                        console.error("Paylaşma hatası:", err);
+                        this.showNotification("Transkripsiyon paylaşılırken bir hata oluştu.", 'error');
+                    });
+            } else {
+                this.showNotification("Bu özellik tarayıcınız tarafından desteklenmiyor.", 'error');
+            }
+        },
+
+        /**
+         * Metni kalın yapar.
+         */
+        boldText() {
+            this.transcription = `<strong>${this.transcription}</strong>`;
+            this.showNotification("Metin kalınlaştırıldı.", 'success');
+        },
+
+        /**
+         * Metni italik yapar.
+         */
+        italicText() {
+            this.transcription = `<em>${this.transcription}</em>`;
+            this.showNotification("Metin italikleştirildi.", 'success');
+        },
+
+        /**
+         * Metni altını çizer.
+         */
+        underlineText() {
+            this.transcription = `<u>${this.transcription}</u>`;
+            this.showNotification("Metnin altı çizildi.", 'success');
+        },
+
+        /**
+         * Tema modunu değiştirir.
+         */
+        toggleTheme() {
+            this.theme = this.theme === 'light' ? 'dark' : 'light';
+            this.showNotification(`Tema ${this.theme === 'light' ? 'Açık' : 'Gölge'} moda geçti.`, 'success');
+        },
+
+        /**
+         * Transkripsiyonu geçmişe ekler.
+         * @param {string} fileName - Dosya adı
+         * @param {string} language - Seçilen dil
+         * @param {string} transcription - Transkripsiyon metni
+         * @param {string} audioUrl - Ses dosyasının URL'si
+         */
+        addToHistory(fileName, language, transcription, audioUrl) {
+            this.transcriptionHistory.unshift({
+                fileName,
+                language,
+                transcription,
+                audioUrl,
+            });
+        },
+
+        /**
+         * Bildirim gösterir.
+         * @param {string} message - Bildirim mesajı
+         * @param {string} type - 'success' veya 'error'
+         */
+        showNotification(message, type) {
+            this.notification.message = message;
+            this.notification.type = type;
+            setTimeout(() => {
+                this.notification.message = '';
+                this.notification.type = '';
+            }, 3000);
+        },
+
+        /**
+         * Kullanıcı giriş yapar.
+         */
+        async login() {
+            try {
+                const response = await axios.post('/api/login', this.loginForm);
+                if (response.data && response.data.token) {
+                    localStorage.setItem('authToken', response.data.token);
+                    this.isAuthenticated = true;
+                    this.user = response.data.user;
+                    this.showNotification('Başarıyla giriş yapıldı.', 'success');
+                }
+            } catch (error) {
+                console.error("Giriş hatası:", error);
+                this.showNotification("Giriş başarısız. Lütfen bilgilerinizi kontrol edin.", 'error');
+            }
+        },
+
+        /**
+         * Kullanıcı çıkış yapar.
+         */
         logout() {
             localStorage.removeItem('authToken');
-            window.location.href = '/admin';
+            this.isAuthenticated = false;
+            this.user = { username: '', email: '' };
+            this.showNotification("Başarıyla çıkış yapıldı.", 'success');
         },
-        closeModal() {
-            this.showModal = false;
+
+        /**
+         * Kullanıcı profilini günceller.
+         */
+        async updateProfile() {
+            try {
+                const response = await axios.put('/api/profile', this.user, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+                    },
+                });
+                if (response.data && response.data.user) {
+                    this.user = response.data.user;
+                    this.showNotification("Profil başarıyla güncellendi.", 'success');
+                }
+            } catch (error) {
+                console.error("Profil güncelleme hatası:", error);
+                this.showNotification("Profil güncellenirken bir hata oluştu.", 'error');
+            }
         },
-        handleNavClick() {
-            this.hamburgerMenuVisible = false;
-            this.dropdownVisible = false;
+
+        /**
+         * Geçmiş transkripsiyonu siler.
+         * @param {number} index - Silinecek transkripsiyonun indeksi
+         */
+        deleteHistory(index) {
+            this.transcriptionHistory.splice(index, 1);
+            this.showNotification("Transkripsiyon geçmişinden silindi.", 'success');
         },
-        handleAdminLoginClick() {
-            this.hamburgerMenuVisible = false;
-        },
-        toggleDropdown() {
-            this.dropdownVisible = !this.dropdownVisible;
-        },
-        toggleHamburgerMenu() {
-            this.hamburgerMenuVisible = !this.hamburgerMenuVisible;
+
+        /**
+         * Dil kodunu dil adına çevirir.
+         * @param {string} code - Dil kodu
+         * @returns {string} - Dil adı
+         */
+        getLanguageName(code) {
+            const languages = {
+                'tr-TR': 'Türkçe',
+                'ku-TR': 'Kürtçe',
+                'zaz-TR': 'Zazaca',
+                'ar-TR': 'Arapça',
+                'ce-TR': 'Çerkesçe',
+                'el-TR': 'Yunanca',
+                'hy-TR': 'Ermenice',
+                'ka-TR': 'Gürcüce',
+                'lzz-TR': 'Lazca',
+            };
+            return languages[code] || code;
         },
     },
     created() {
-        this.isAuth = !!localStorage.getItem('authToken');
+        // Kullanıcı kimlik doğrulama durumu kontrolü
+        const token = localStorage.getItem('authToken');
+        if (token) {
+            this.isAuthenticated = true;
+            // Token'ı kullanarak kullanıcı bilgilerini almak için bir API çağrısı yapılabilir
+            // Örneğin:
+            axios.get('/api/profile', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            })
+                .then(response => {
+                    if (response.data && response.data.user) {
+                        this.user = response.data.user;
+                    }
+                })
+                .catch(error => {
+                    console.error("Profil yükleme hatası:", error);
+                    this.logout();
+                });
+        }
     },
 };
 </script>
 
 <style scoped>
-#app {
+.app-container {
     text-align: center;
-    max-width: 100%;
-    margin: 0 auto;
+    max-width: 1000px;
+    margin: 20px auto;
     padding: 20px;
-    background: linear-gradient(to right, #ece9e6, #ffffff);
     border-radius: 15px;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease, color 0.3s ease;
+    display: grid;
+    grid-template-areas:
+    "theme auth"
+    "dropzone dropzone"
+    "upload upload"
+    "progress progress"
+    "result result"
+    "editor editor"
+    "history history"
+    "statistics statistics"
+    "profile profile";
+    grid-gap: 20px;
 }
 
-.upload-container {
-    margin-bottom: 20px;
-    padding: 20px;
+.app-container.light {
+    background: linear-gradient(to right, #ece9e6, #ffffff);
+    color: #000;
+}
+
+.app-container.dark {
+    background: linear-gradient(to right, #2c3e50, #4ca1af);
+    color: #fff;
+}
+
+.theme-toggle {
+    grid-area: theme;
+    text-align: right;
+}
+
+.theme-toggle button {
+    background: none;
+    border: none;
+    font-size: 1.2em;
+    cursor: pointer;
+    color: inherit;
+}
+
+.auth-section {
+    grid-area: auth;
+    text-align: left;
+}
+
+.auth-section h2 {
+    margin-bottom: 10px;
+}
+
+.auth-section form {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+}
+
+.auth-section input {
+    padding: 10px;
     border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.auth-section button {
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #1e90ff;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.auth-section button:hover {
+    background-color: #0b78e3;
+}
+
+.dropzone {
+    grid-area: dropzone;
+    border: 2px dashed #ccc;
+    padding: 20px;
     border-radius: 10px;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    position: relative;
+}
+
+.dropzone.is-dragover {
+    background-color: #f0f8ff;
+    border-color: #1e90ff;
+}
+
+.dropzone p {
+    margin: 0;
+    font-size: 1.1em;
+}
+
+.select-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: none;
+    background-color: #1e90ff;
+    color: white;
+    cursor: pointer;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    background-color: #f9f9f9;
     transition: all 0.3s ease;
 }
 
+.select-button:hover {
+    background-color: #0b78e3;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+}
+
+.upload-container {
+    grid-area: upload;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
 .upload-section {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 10px;
     align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
+    justify-items: center;
+}
+
+.upload-section select {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    cursor: pointer;
 }
 
 .transcribe-button {
-    padding: 10px;
+    padding: 10px 20px;
     font-size: 16px;
     border-radius: 5px;
     border: none;
@@ -195,209 +700,204 @@ export default {
     transition: all 0.3s ease;
 }
 
-.transcribe-button:hover {
+.transcribe-button:disabled {
+    background-color: #a5d6a7;
+    cursor: not-allowed;
+}
+
+.transcribe-button:hover:not(:disabled) {
     background-color: #388e3c;
     transform: translateY(-2px);
     box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
 }
 
+.progress-bar {
+    grid-area: progress;
+    width: 100%;
+    background-color: #f3f3f3;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.progress {
+    height: 10px;
+    background-color: #4caf50;
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
 .transcription-result {
-    margin-top: 20px;
+    grid-area: result;
     padding: 20px;
     border: 1px solid #ccc;
     border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.9);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    background-color: #fff;
 }
 
-.nav-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.transcription-textarea {
+    width: 100%;
+    height: 150px;
+    resize: vertical;
     padding: 10px;
-    background-color: #007bff;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-    border-radius: 8px;
-    margin: 0;
-    color: white;
-    font-weight: bold;
-}
-
-.hamburger-menu {
-    padding: 5px;
-    background-color: #ff4444;
-    border-radius: 50%;
-    transition: transform 0.3s ease;
-    margin-right: 15px;
-}
-
-.hamburger-menu:hover {
-    transform: scale(1.1);
-}
-
-.hamburger-menu-content {
-    position: fixed;
-    top: 60px;
-    left: 10px;
-    background-color: #2c2c2e;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-    border-radius: 8px;
-    z-index: 2000;
-    padding: 15px;
-    min-width: 200px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.hamburger-menu-item {
-    color: #f0f0f3;
-    text-decoration: none;
-    font-weight: bold;
-    padding: 10px;
+    font-size: 1em;
+    border: 1px solid #ccc;
     border-radius: 5px;
+}
+
+.actions {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+
+.actions button {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #1e90ff;
+    color: white;
     transition: background-color 0.3s ease;
 }
 
-.hamburger-menu-item:hover {
-    background-color: #ff6347;
+.actions button:hover {
+    background-color: #0b78e3;
 }
 
-.nav-links {
+.editor-tools {
+    grid-area: editor;
     display: flex;
     gap: 10px;
-    flex: 1;
-    justify-content: space-around;
-    align-items: center;
+    justify-content: center;
 }
 
-.nav-link {
-    color: white;
-    text-decoration: none;
-    padding: 8px 12px;
-    border-radius: 8px;
-    transition: background-color 0.3s ease;
-    background-color: #1c1c1e;
-    white-space: nowrap;
-    font-size: 0.9em;
-}
-
-.nav-link:hover {
-    background-color: #1e90ff;
-}
-
-.logout-button {
-    background-color: #dc3545;
-    color: white;
+.editor-tools button {
+    padding: 5px 10px;
     border: none;
-    padding: 8px 12px;
-    border-radius: 8px;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #ff9800;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+.editor-tools button:hover {
+    background-color: #e68900;
+}
+
+.history-container {
+    grid-area: history;
+    padding: 20px;
+    border-top: 2px solid #ccc;
+}
+
+.history-container h2 {
+    margin-bottom: 10px;
+}
+
+.history-container ul {
+    list-style: none;
+    padding: 0;
+}
+
+.history-container li {
+    margin-bottom: 20px;
+}
+
+.history-container hr {
+    border: none;
+    border-top: 1px solid #ccc;
+    margin: 10px 0;
+}
+
+.statistics-container {
+    grid-area: statistics;
+    padding: 20px;
+    border-top: 2px solid #ccc;
+}
+
+.statistics-container h2 {
+    margin-bottom: 10px;
+}
+
+.error-message {
+    margin-top: 10px;
+    color: #dc3545;
+    font-weight: bold;
+}
+
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 20px;
+    border-radius: 5px;
+    color: white;
+    z-index: 1000;
+    opacity: 0.9;
+}
+
+.notification.success {
+    background-color: #28a745;
+}
+
+.notification.error {
+    background-color: #dc3545;
+}
+
+.profile-container {
+    grid-area: profile;
+    padding: 20px;
+    border-top: 2px solid #ccc;
+}
+
+.profile-container h2 {
+    margin-bottom: 10px;
+}
+
+.profile-container p {
+    margin: 5px 0;
+}
+
+.profile-container button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #17a2b8;
+    color: white;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    font-size: 0.9em;
 }
 
-.logout-button:hover {
-    background-color: #c82333;
+.profile-container button:hover {
+    background-color: #138496;
 }
 
-.bottom-menu {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background-color: #1c1c1e;
-    display: flex;
-    justify-content: space-around;
-    padding: 10px;
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
-    margin-bottom: 4px;
-    z-index: 1000;
-}
-
-.bottom-menu-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-decoration: none;
-    font-weight: bold;
-    font-size: 0.9em;
-    color: white;
-    padding: 5px;
-    border-radius: 5px;
-    transition: transform 0.3s ease;
-    text-align: center;
-}
-
-.bottom-menu-item i {
-    font-size: 20px;
-    margin-bottom: 5px;
-    transition: transform 0.3s ease;
-}
-
-.bottom-menu-item:hover {
-    transform: scale(1.1);
-}
-
-.exam-create {
-    animation: pulse-red 6s infinite, grow-shrink 3s infinite;
-}
-
-@keyframes pulse-red {
-    0%, 100% {
-        background-color: #e74c3c;
-    }
-    50% {
-        background-color: #0056b3;
-    }
-}
-
-@keyframes grow-shrink {
-    0%, 100% {
-        font-size: 0.9em;
-    }
-    100% {
-        font-size: 0.9em;
-    }
-}
-
+/* Responsive Tasarım */
 @media (max-width: 768px) {
-    .nav-container {
-        padding: 10px;
-        justify-content: space-between;
-        flex-wrap: nowrap;
+    .app-container {
+        grid-template-areas:
+      "theme"
+      "auth"
+      "dropzone"
+      "upload"
+      "progress"
+      "result"
+      "editor"
+      "history"
+      "statistics"
+      "profile";
     }
-    .hamburger-menu {
-        display: block;
+
+    .actions {
+        flex-direction: column;
     }
-    .nav-links {
-        display: flex;
+
+    .actions button {
         width: 100%;
-        justify-content: space-between;
-        padding: 0;
-    }
-    .nav-link, .logout-button {
-        flex: 1;
-        text-align: center;
-        margin: 0 5px;
-    }
-    .bottom-menu {
-        flex-direction: row;
-        gap: 5px;
-        padding: 15px;
-        background-color: rgba(52, 58, 64, 0.9);
-    }
-    .bottom-menu-item {
-        font-size: 0.7em;
-    }
-    .main-content {
-        padding: 10px;
-        margin-top: 100px;
     }
 }
 </style>

@@ -18,6 +18,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+
 // Media upload rotası
 Route::post('/upload', [MediaController::class, 'upload'])->middleware('check.media.upload');
 
@@ -55,6 +56,7 @@ Route::prefix('transcribe')->group(function () {
     Route::post('/', [TranscriptionController::class, 'transcribe']);
     Route::post('/upload', [AudioController::class, 'upload']);
 });
+
 
 // Family Member işlemleri
 Route::prefix('family')->group(function () {

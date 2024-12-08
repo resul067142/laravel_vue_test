@@ -12,18 +12,18 @@
             <form class="auth-form p-3 mb-3">
                 <div class="mb-3 text-center">
                     <label for="exampleInputEmail1" class="form-label fw-bold text-info fs-6">Kayıtlı E-posta adresi</label>
-                    <input type="email" class="form-control" id="exampleInputEmail1" placeholder="E-postanızı girin" required>
+                    <input type="email" class="form-control" id="exampleInputEmail1" placeholder="E-postanızı girin" v-model="email" required>
                 </div>
                 <div class="mb-3 text-center">
                     <label for="exampleInputPassword1" class="form-label fw-bold text-warning fs-6">Uygulama Giriş Şifresi</label>
-                    <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Şifrenizi girin" required>
+                    <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Şifrenizi girin" v-model="password" required>
                 </div>
                 <div class="mb-3 form-check d-flex justify-content-center align-items-center">
-                    <input type="checkbox" class="form-check-input me-2" id="exampleCheck1">
+                    <input type="checkbox" class="form-check-input me-2" id="exampleCheck1" v-model="remember">
                     <label class="form-check-label fw-bold text-success fs-6" for="exampleCheck1">Beni hatırla</label>
                 </div>
                 <div class="d-flex justify-content-between">
-                    <router-link to="/giris" class="btn btn-primary w-45 fw-bold fs-6">Uygulamaya Giriş Yap</router-link>
+                    <button @click.prevent="login" class="btn btn-primary w-45 fw-bold fs-6">Uygulamaya Giriş Yap</button>
                     <router-link to="/kayitol" class="btn btn-secondary w-45 fw-bold fs-6">Kayıt Ol</router-link>
                 </div>
             </form>
@@ -103,10 +103,16 @@
 </template>
 
 <script>
-import axios from "axios";
+import { jsPDF } from 'jspdf';
+import html2canvas from 'html2canvas';
+import axios from 'axios';
+
 export default {
     data() {
         return {
+            email: '',
+            password: '',
+            remember: false,
             name: null,
             photo: null,
             sorular: null,
@@ -139,6 +145,25 @@ export default {
             this.yarismaBasladi = false;
             this.skorKaydedildi = false;
             this.name = null;
+            this.secilenSoru = {};
+            this.secilenSoruSirasi = 0;
+            this.yuzdeDogruCevap = null;
+            this.sorular = null;
+        },
+        login() {
+            axios.post('/api/login', {
+                email: this.email,
+                password: this.password,
+                remember: this.remember
+            }).then(res => {
+                // Giriş başarılı ise yarışma sayfasına yönlendirin veya uygun aksiyonu alın
+                this.showNotification("Başarıyla giriş yapıldı.", 'success');
+                // Örneğin, kullanıcıyı dashboard'a yönlendirebilirsiniz:
+                // this.$router.push('/dashboard');
+            }).catch(error => {
+                console.error("Giriş yapılırken hata oluştu:", error);
+                this.showNotification("Giriş yapılırken bir hata oluştu.", 'error');
+            });
         },
         start() {
             this.secilenSoruSirasi = 0;
@@ -147,15 +172,24 @@ export default {
                 this.secilenSoru = this.sorular[0];
                 this.yarismaBasladi = true;
                 window.addEventListener('beforeunload', this.handleBeforeUnload);
+            }).catch(error => {
+                console.error("Sorular alınırken hata oluştu:", error);
+                this.showNotification("Sorular alınırken bir hata oluştu.", 'error');
             });
         },
         oncekiSoru() {
-            this.secilenSoruSirasi--;
-            this.secilenSoru = this.sorular[this.secilenSoruSirasi];
+            if (this.secilenSoruSirasi > 0) {
+                this.secilenSoruSirasi--;
+                this.secilenSoru = this.sorular[this.secilenSoruSirasi];
+                this.skorKaydedildi = false;
+            }
         },
         sonrakiSoru() {
-            this.secilenSoruSirasi++;
-            this.secilenSoru = this.sorular[this.secilenSoruSirasi];
+            if (this.secilenSoruSirasi < this.sorular.length - 1) {
+                this.secilenSoruSirasi++;
+                this.secilenSoru = this.sorular[this.secilenSoruSirasi];
+                this.skorKaydedildi = false;
+            }
         },
         sec(secenek) {
             if (!this.skorKaydedildi) {
@@ -174,8 +208,14 @@ export default {
                 this.skorKaydedildi = true;
                 axios.get('/api/scores').then(res => {
                     this.scores = res.data;
+                }).catch(error => {
+                    console.error("Skorlar alınırken hata oluştu:", error);
+                    this.showNotification("Skorlar alınırken bir hata oluştu.", 'error');
                 });
                 window.removeEventListener('beforeunload', this.handleBeforeUnload);
+            }).catch(error => {
+                console.error("Skor kaydedilirken hata oluştu:", error);
+                this.showNotification("Skor kaydedilirken bir hata oluştu.", 'error');
             });
         },
         updateClock() {
@@ -212,18 +252,26 @@ export default {
         handleBeforeUnload(event) {
             event.preventDefault();
             event.returnValue = '';
+        },
+        showNotification(message, type) {
+            // Bildirim gösterme metodunuz
+            // Örneğin, Vue Toastification veya başka bir bildirim kütüphanesi kullanabilirsiniz
+            console.log(message); // Örneğin, konsola loglama
         }
     },
     mounted() {
         axios.get('/api/scores').then(res => {
             this.scores = res.data;
+        }).catch(error => {
+            console.error("Skorlar alınırken hata oluştu:", error);
+            this.showNotification("Skorlar alınırken bir hata oluştu.", 'error');
         });
         this.updateClock();
         this.updateWeather();
         this.updateDate();
         window.addEventListener('beforeunload', this.handleBeforeUnload);
     },
-    beforeDestroy() {
+    beforeUnmount() { // Vue 3 için beforeUnmount kullanılır
         window.removeEventListener('beforeunload', this.handleBeforeUnload);
     }
 };

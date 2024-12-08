@@ -18,6 +18,8 @@
         "bootstrap": "^5.3.3",
         "chart.js": "^4.4.5",
         "file-saver": "^2.0.5",
+        "html2canvas": "^1.4.1",
+        "jspdf": "^2.5.2",
         "vue": "^3.5.12",
         "vue-chartjs": "^5.3.1",
         "vue-i18n": "^9.2.2",

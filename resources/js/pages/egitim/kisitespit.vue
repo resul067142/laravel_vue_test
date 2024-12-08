@@ -1,6 +1,6 @@
 <template>
     <div class="container">
-        <h2>Fotoğraf ve Video Yükle</h2>
+        <h2>ŞAHIS TESPİT PROGRAMI</h2>
 
         <!-- İstatistiksel Veriler -->
         <div v-if="faces.length" class="stats-section">
@@ -15,7 +15,8 @@
         >
             <label class="file-upload">
                 <i class="fas fa-upload"></i>
-                <span>Dosya Seç veya Sürükle ve Bırak</span>
+                <span>Dosya Seç veya Sürükle</span>
+
                 <input
                     type="file"
                     @change="onFileChange"
