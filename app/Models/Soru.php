@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Soru extends Model
 {
-    protected $table = 'sorular';
     use HasFactory;
+    protected $guarded = [];
+
+    protected $table = 'sorular';
 }

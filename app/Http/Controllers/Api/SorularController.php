@@ -10,7 +10,6 @@ class SorularController extends Controller
 {
     public function index() {
         $products = Soru::get();
-
         return response()->json($products);
     }
 

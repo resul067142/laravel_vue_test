@@ -26,7 +26,7 @@ Route::post('/upload', [MediaController::class, 'upload'])->middleware('check.me
 Route::post('/login', [AuthController::class, 'login']);
 
 // Sorular CRUD işlemleri
-Route::prefix('sorular')->middleware('auth:sanctum')->group(function () {
+Route::prefix('sorular')/*->middleware('auth:sanctum')*/->group(function () {
     Route::get('/', [SorularController::class, 'index']);
     Route::get('/{id}', [SorularController::class, 'show']);
     Route::post('/', [SorularController::class, 'store']);

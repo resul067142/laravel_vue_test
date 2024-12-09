@@ -169,6 +169,7 @@ export default {
             this.secilenSoruSirasi = 0;
             axios.get('/api/sorular').then(res => {
                 this.sorular = res.data;
+                console.log(this.sorular)
                 this.secilenSoru = this.sorular[0];
                 this.yarismaBasladi = true;
                 window.addEventListener('beforeunload', this.handleBeforeUnload);
